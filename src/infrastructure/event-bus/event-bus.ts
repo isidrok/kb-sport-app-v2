@@ -11,6 +11,7 @@ export abstract class Event<T = any> {
  * 
  * Supports:
  * - Type-safe event subscription and publishing
+ * - Enforces all events extend base Event class
  * - Multiple listeners per event type
  * - Automatic cleanup via unsubscribe functions
  * - Memory leak prevention through proper listener management
@@ -18,7 +19,7 @@ export abstract class Event<T = any> {
 export class EventBus {
   private listeners: Map<string, Function[]> = new Map()
 
-  subscribe<T>(eventType: string, listener: (event: T) => void): () => void {
+  subscribe<T extends Event>(eventType: string, listener: (event: T) => void): () => void {
     if (!this.listeners.has(eventType)) {
       this.listeners.set(eventType, [])
     }
@@ -36,7 +37,7 @@ export class EventBus {
     }
   }
 
-  publish<T>(eventType: string, event: T): void {
+  publish<T extends Event>(eventType: string, event: T): void {
     const eventListeners = this.listeners.get(eventType)
     if (eventListeners) {
       eventListeners.forEach(listener => listener(event))

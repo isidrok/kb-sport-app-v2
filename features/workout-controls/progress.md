@@ -1,7 +1,7 @@
 # Implementation Progress
 
 ## Current Status
-Working on: EventBus Infrastructure
+Working on: useEventBus Hook
 Phase: Completed
 
 ## Component: WorkoutEntity
@@ -40,3 +40,19 @@ Starting TDD implementation of workout-controls feature. Following plan.md seque
 
 ### Notes
 Implementing lightweight event system for async communication between layers.
+
+## Component: useEventBus Hook
+
+### Tests
+- [DONE] publish calls eventbus
+- [DONE] subscribe adds listener and cleans up
+
+### Documentation
+- API documentation: Complete
+- Complex logic documented: N/A
+
+### Refactorings Applied
+- None yet
+
+### Notes
+Easy event subscription/publishing from components with automatic cleanup.

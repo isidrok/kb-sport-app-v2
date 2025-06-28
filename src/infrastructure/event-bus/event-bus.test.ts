@@ -1,40 +1,46 @@
 import { describe, it, expect, vi } from 'vitest'
 import { EventBus, Event } from './event-bus'
 
+class TestEvent extends Event<{ data: string }> {}
+
 describe('EventBus', () => {
   it('publish calls registered listeners', () => {
     const eventBus = new EventBus()
     const listener = vi.fn()
+    const testEvent = new TestEvent({ data: 'test' })
     
     eventBus.subscribe('test-event', listener)
-    eventBus.publish('test-event', { data: 'test' })
+    eventBus.publish('test-event', testEvent)
     
-    expect(listener).toHaveBeenCalledWith({ data: 'test' })
+    expect(listener).toHaveBeenCalledWith(testEvent)
   })
 
   it('multiple listeners called', () => {
     const eventBus = new EventBus()
     const listener1 = vi.fn()
     const listener2 = vi.fn()
+    const testEvent = new TestEvent({ data: 'test' })
     
     eventBus.subscribe('test-event', listener1)
     eventBus.subscribe('test-event', listener2)
-    eventBus.publish('test-event', { data: 'test' })
+    eventBus.publish('test-event', testEvent)
     
-    expect(listener1).toHaveBeenCalledWith({ data: 'test' })
-    expect(listener2).toHaveBeenCalledWith({ data: 'test' })
+    expect(listener1).toHaveBeenCalledWith(testEvent)
+    expect(listener2).toHaveBeenCalledWith(testEvent)
   })
 
   it('unsubscribe removes listener', () => {
     const eventBus = new EventBus()
     const listener = vi.fn()
+    const testEvent1 = new TestEvent({ data: 'test' })
+    const testEvent2 = new TestEvent({ data: 'test2' })
     
     const unsubscribe = eventBus.subscribe('test-event', listener)
-    eventBus.publish('test-event', { data: 'test' })
+    eventBus.publish('test-event', testEvent1)
     expect(listener).toHaveBeenCalledOnce()
     
     unsubscribe()
-    eventBus.publish('test-event', { data: 'test2' })
+    eventBus.publish('test-event', testEvent2)
     expect(listener).toHaveBeenCalledOnce() // still only called once
   })
 
