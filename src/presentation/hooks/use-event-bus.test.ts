@@ -17,21 +17,21 @@ describe('useEventBus', () => {
   })
 
   it('publish calls eventbus', () => {
-    const { result } = renderHook(() => useEventBus<TestEvent>('test-event'))
+    const { result } = renderHook(() => useEventBus(TestEvent))
     const testEvent = new TestEvent({ data: 'test' })
     
     result.current.publish(testEvent)
     
-    expect(mockEventBus.publish).toHaveBeenCalledWith('test-event', testEvent)
+    expect(mockEventBus.publish).toHaveBeenCalledWith(testEvent)
   })
 
   it('subscribe adds listener and cleans up', () => {
-    const { result, unmount } = renderHook(() => useEventBus<TestEvent>('test-event'))
+    const { result, unmount } = renderHook(() => useEventBus(TestEvent))
     const listener = vi.fn()
     
     result.current.subscribe(listener)
     
-    expect(mockEventBus.subscribe).toHaveBeenCalledWith('test-event', listener)
+    expect(mockEventBus.subscribe).toHaveBeenCalledWith(TestEvent, listener)
     
     unmount()
     expect(mockUnsubscribe).toHaveBeenCalled()

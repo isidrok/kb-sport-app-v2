@@ -17,17 +17,17 @@ export abstract class Event<T = any> {
  * - Memory leak prevention through proper listener management
  */
 export class EventBus {
-  private listeners: Map<string, Function[]> = new Map()
+  private listeners: Map<Function, Function[]> = new Map()
 
-  subscribe<T extends Event>(eventType: string, listener: (event: T) => void): () => void {
-    if (!this.listeners.has(eventType)) {
-      this.listeners.set(eventType, [])
+  subscribe<T extends Event>(eventClass: new (...args: any[]) => T, listener: (event: T) => void): () => void {
+    if (!this.listeners.has(eventClass)) {
+      this.listeners.set(eventClass, [])
     }
     
-    this.listeners.get(eventType)!.push(listener)
+    this.listeners.get(eventClass)!.push(listener)
     
     return () => {
-      const eventListeners = this.listeners.get(eventType)
+      const eventListeners = this.listeners.get(eventClass)
       if (eventListeners) {
         const index = eventListeners.indexOf(listener)
         if (index > -1) {
@@ -37,8 +37,9 @@ export class EventBus {
     }
   }
 
-  publish<T extends Event>(eventType: string, event: T): void {
-    const eventListeners = this.listeners.get(eventType)
+  publish<T extends Event>(event: T): void {
+    const eventClass = event.constructor
+    const eventListeners = this.listeners.get(eventClass)
     if (eventListeners) {
       eventListeners.forEach(listener => listener(event))
     }

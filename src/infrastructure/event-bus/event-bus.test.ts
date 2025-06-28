@@ -9,8 +9,8 @@ describe('EventBus', () => {
     const listener = vi.fn()
     const testEvent = new TestEvent({ data: 'test' })
     
-    eventBus.subscribe('test-event', listener)
-    eventBus.publish('test-event', testEvent)
+    eventBus.subscribe(TestEvent, listener)
+    eventBus.publish(testEvent)
     
     expect(listener).toHaveBeenCalledWith(testEvent)
   })
@@ -21,9 +21,9 @@ describe('EventBus', () => {
     const listener2 = vi.fn()
     const testEvent = new TestEvent({ data: 'test' })
     
-    eventBus.subscribe('test-event', listener1)
-    eventBus.subscribe('test-event', listener2)
-    eventBus.publish('test-event', testEvent)
+    eventBus.subscribe(TestEvent, listener1)
+    eventBus.subscribe(TestEvent, listener2)
+    eventBus.publish(testEvent)
     
     expect(listener1).toHaveBeenCalledWith(testEvent)
     expect(listener2).toHaveBeenCalledWith(testEvent)
@@ -35,12 +35,12 @@ describe('EventBus', () => {
     const testEvent1 = new TestEvent({ data: 'test' })
     const testEvent2 = new TestEvent({ data: 'test2' })
     
-    const unsubscribe = eventBus.subscribe('test-event', listener)
-    eventBus.publish('test-event', testEvent1)
+    const unsubscribe = eventBus.subscribe(TestEvent, listener)
+    eventBus.publish(testEvent1)
     expect(listener).toHaveBeenCalledOnce()
     
     unsubscribe()
-    eventBus.publish('test-event', testEvent2)
+    eventBus.publish(testEvent2)
     expect(listener).toHaveBeenCalledOnce() // still only called once
   })
 
