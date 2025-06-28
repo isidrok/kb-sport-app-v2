@@ -44,7 +44,7 @@ Implementing lightweight event system for async communication between layers.
 ## Component: useEventBus Hook
 
 ### Tests
-- [DONE] publish calls eventbus
+- [DONE] publish calls EventBus
 - [DONE] subscribe adds listener and cleans up
 
 ### Documentation
@@ -74,3 +74,20 @@ Easy event subscription/publishing from components with automatic cleanup.
 
 ### Notes
 Preloads ML model with loading/ready/error event feedback.
+
+## Component: StartCameraUseCase
+
+### Tests
+- [TODO] test_publishes_requesting_camera_event
+- [TODO] test_starts_camera_and_publishes_ready
+- [TODO] test_publishes_error_on_access_denied
+
+### Documentation
+- API documentation: TODO
+- Complex logic documented: N/A
+
+### Refactorings Applied
+- Updated plan.md to move dimension setting responsibility to WorkoutService
+
+### Notes
+Plan updated: StartCameraUseCase now only handles camera operations, not canvas dimensions. WorkoutService will handle element setup.

@@ -111,22 +111,21 @@ class LoadModelUseCase {
 4. test_initializes_prediction_adapter - Calls predictionAdapter.initialize()
 
 ### Component: StartCameraUseCase
-**Purpose**: Start camera with proper video/canvas setup
+**Purpose**: Start camera feed
 **Stories Covered**: STORY-002 (camera portion)
 
 **Public API**:
 ```typescript
 class StartCameraUseCase {
   constructor(cameraAdapter: CameraAdapter, eventBus: EventBus)
-  execute(videoElement: HTMLVideoElement, canvasElement: HTMLCanvasElement): Promise<void>
+  execute(videoElement: HTMLVideoElement): Promise<void>
 }
 ```
 
 **Tests** (in order):
-1. test_sets_video_canvas_dimensions_from_client_rect - Sets width/height from getBoundingClientRect
-2. test_publishes_requesting_camera_event - Publishes CameraAccessEvent requesting
-3. test_starts_camera_and_publishes_ready - Starts camera and publishes ready event
-4. test_publishes_error_on_access_denied - Handles camera permission errors
+1. test_publishes_requesting_camera_event - Publishes CameraAccessEvent requesting
+2. test_starts_camera_and_publishes_ready - Starts camera and publishes ready event
+3. test_publishes_error_on_access_denied - Handles camera permission errors
 
 ### Component: StopCameraUseCase
 **Purpose**: Stop camera and cleanup resources
@@ -249,10 +248,11 @@ class WorkoutService {
 
 **Tests** (in order):
 1. test_creates_workout_on_initialization - Has workout instance
-2. test_start_workout_calls_camera_and_workout_use_cases - Calls both camera and workout use cases
-3. test_stop_workout_calls_camera_and_workout_use_cases - Calls both camera and workout use cases
-4. test_delegates_process_frame_to_use_case - Calls ProcessFrameUseCase
-5. test_returns_workout_stats - Returns current workout stats
+2. test_sets_video_canvas_dimensions_from_client_rect - Sets width/height from getBoundingClientRect before starting camera
+3. test_start_workout_calls_camera_and_workout_use_cases - Calls both camera and workout use cases
+4. test_stop_workout_calls_camera_and_workout_use_cases - Calls both camera and workout use cases
+5. test_delegates_process_frame_to_use_case - Calls ProcessFrameUseCase
+6. test_returns_workout_stats - Returns current workout stats
 
 ## Phase 4: Presentation Layer
 
