@@ -1,8 +1,8 @@
 # Implementation Progress
 
 ## Current Status
-Working on: StopWorkoutUseCase
-Phase: Phase 2 - Application Layer Use Cases
+Working on: WorkoutService
+Phase: Phase 3 - Application Service & Coordination
 
 ## Component: WorkoutEntity
 
@@ -140,3 +140,37 @@ StartWorkoutUseCase complete. Validates workout state, starts workout, publishes
 
 ### Notes
 StopWorkoutUseCase complete. Validates workout state, stops workout, publishes status event with proper timing verification.
+
+## Component: ProcessFrameUseCase
+
+### Tests
+- [DONE] processes frame when model ready
+- [DONE] renders poses to canvas
+- [DONE] skips processing when model not ready
+
+### Documentation
+- API documentation: Complete
+- Complex logic documented: N/A
+
+### Refactorings Applied
+- Fixed method names: isInitialized() and process() instead of isReady/predict
+
+### Notes
+ProcessFrameUseCase complete. Handles ML pose detection with proper adapter integration and null-checking for uninitialized model.
+
+## Component: GetWorkoutStatusUseCase
+
+### Tests
+- [DONE] returns workout stats
+- [DONE] can start when idle
+- [DONE] can stop when active
+
+### Documentation
+- API documentation: Complete
+- Complex logic documented: N/A
+
+### Refactorings Applied
+- None yet
+
+### Notes
+GetWorkoutStatusUseCase complete. Pure query use case that transforms workout entity data into UI-friendly stats with action availability flags.
