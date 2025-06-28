@@ -1,19 +1,10 @@
-# CLAUDE.md
+# Claude Assistant Instructions - Global
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code when working with code in this repository.
 
-## Common Commands
+## Project Overview
 
-- **Development**: `pnpm dev` - Start development server with host binding
-- **Build**: `pnpm build` - TypeScript compile + Vite build
-- **Type checking**: `pnpm tsc` - Run TypeScript compiler without emit
-- **Testing**: `pnpm test` - Run Vitest tests
-- **Test UI**: `pnpm test:ui` - Run tests with Vitest UI
-- **Preview**: `pnpm preview` - Preview production build
-
-## Architecture Overview
-
-This is a kettlebell workout tracking application built with Preact, TypeScript, and TensorFlow.js for pose detection.
+Kettlebell workout tracking application built with Preact, TypeScript, and TensorFlow.js for real-time pose detection and exercise analysis.
 
 ### Tech Stack
 - **Frontend**: Preact with TypeScript
@@ -22,99 +13,108 @@ This is a kettlebell workout tracking application built with Preact, TypeScript,
 - **Testing**: Vitest with happy-dom environment
 - **Package Manager**: pnpm
 
-### Project Structure
+### Commands
+- **Development**: `pnpm dev` - Start development server with host binding
+- **Build**: `pnpm build` - TypeScript compile + Vite build
+- **Type checking**: `pnpm tsc` - Run TypeScript compiler without emit
+- **Testing**: `pnpm test` - Run Vitest tests
+- **Test UI**: `pnpm test:ui` - Run tests with Vitest UI
+- **Preview**: `pnpm preview` - Preview production build
 
-**Clean Architecture with DDD:**
+## Global Architecture Patterns
+
+### Clean Architecture with DDD
 - **Domain Layer** (`src/domain/`): Core entities, types and business logic
-  - `entities/`: Domain entities (Workout, etc.)
-  - `types/`: Domain-specific type definitions
 - **Application Layer** (`src/application/`): Use cases and application services
-  - `use-cases/`: Single-responsibility business operations
-  - `services/`: Coordinate use cases and maintain application state
 - **Infrastructure Layer** (`src/infrastructure/`): External integrations
-  - `adapters/`: External API integrations (camera, ML model, rendering)
-  - `event-bus/`: Event system for async communication (singleton)
 - **Presentation Layer** (`src/presentation/`): UI components and hooks
-  - `hooks/`: Shared/app-level hooks (useEventBus, useModelLoading)
-  - `components/`: Shared, reusable UI components (StatusPopup)
-  - `feature/`: Feature-specific presentation logic
-    - `feature/hooks/`: Feature-specific hooks (useWorkoutState, useWorkoutActions)
-    - `feature/components/`: Feature-specific components (WorkoutControls)
-    - `feature/feature-page.tsx`: Main feature page component
-  - Clean architecture with CSS modules for styling
 
-### Key Features
-- Real-time camera feed with pose detection
-- YOLOv8 pose model for kettlebell exercise tracking
-- Canvas overlay for pose visualization
-- Responsive design with portrait/landscape optimization
+### Layer Dependencies
+```
+Presentation → Application → Domain
+     ↓              ↓
+Infrastructure ←──────┘
+```
 
-### Architecture Patterns
+### Global Patterns
 
-**Domain-Driven Design (DDD):**
+**Domain-Driven Design:**
 - Domain entities with getters for direct property access
 - Use cases focused on single business operations
 - Application services coordinate multiple use cases
 - All services and use cases exported as singletons
-- **Constructor Pattern**: Services use object-based dependency injection instead of multiple parameters
-- **ID Generation**: Use `workout_${new Date().toISOString()}` format for entity IDs
+- Constructor Pattern: Services use object-based dependency injection
+- ID Generation: Use `${entityType}_${new Date().toISOString()}` format
 
 **Event-Driven Architecture:**
 - EventBus in infrastructure layer for async communication
 - **CRITICAL**: All events MUST extend base Event<T> class - enforced by TypeScript constraints
-- Event organization: Base Event (infrastructure), Application events (application/events), Domain events (domain/events)
+- Event organization by layer: Base Event (infrastructure), Application events (application/events), Domain events (domain/events)
 - EventBus and useEventBus both enforce `T extends Event` constraints
-- Hooks use publish/subscribe pattern for UI integration
-- Import pattern: Use `@/` path aliases for all imports
 
 **Component Patterns:**
-- Hooks split between state (useWorkoutState) and actions (useWorkoutActions)
+- Hooks split between state queries and action commands
 - Components receive refs for video/canvas elements
 - Video/canvas dimensions set from getBoundingClientRect before camera start
 
-**Presentation Layer Organization:**
-- **Shared vs Feature-Specific**: Separate shared/reusable components from feature-specific ones
-- **Hook Organization**: App-level hooks (useEventBus, useModelLoading) in `presentation/hooks/`, feature hooks in `presentation/feature/hooks/`
-- **Component Organization**: Generic components (StatusPopup) in `presentation/components/`, feature components in `presentation/feature/components/`
-- **Import Patterns**: Feature hooks import shared hooks via relative paths (`../../hooks/use-event-bus`)
+## Global Testing Standards
 
-### Testing Setup
-- Vitest with happy-dom environment
-- Global test setup in `src/test-setup.ts`
-- Testing Library for Preact components
+### Test-Driven Development (TDD)
 - **Strict TDD**: RED-GREEN-REFACTOR cycle required
 - Test behavior, not implementation details
-- No testing of CSS classes or styling
-- **Anti-patterns**: Don't test return types (TypeScript handles this), avoid complex async mocking
 - Use natural language test descriptions: "creates workout with idle status"
-- Clean mocking: Use `vi.mock()` and `vi.mocked()` patterns
+- **CRITICAL**: Always run `pnpm tsc` after implementing features
+- Zero tolerance for TypeScript errors
 
 ### Testing Patterns
-
-**Mocking Strategy:**
 - Use `vi.mock()` at module level for external dependencies
 - Import `Mocked` type from vitest: `import { Mocked } from 'vitest'`
-- Create mocks using object literals with `Partial<Type> as Mocked<Type>` pattern
-- Avoid complex mock factories - keep mocks simple
-- For type issues with mocks, prefer `Partial<Type>` with type assertion over complex interfaces
-- Separate base classes (like Event) into their own files to avoid circular mock dependencies
+- Create mocks using `Partial<Type> as Mocked<Type>` pattern
+- Avoid testing CSS classes, styling, or return types
+- Focus on public APIs and expected outcomes
 
-**File Naming:**
-- Infrastructure adapters use `.adapter.ts` suffix (e.g., `prediction.adapter.ts`)
-- Use cases use `-use-case.ts` suffix (e.g., `start-camera-use-case.ts`)
-- Application services use `.service.ts` suffix (e.g., `workout.service.ts`)
-- Test files use `.test.ts` suffix alongside implementation files
-- Event classes in their respective layer's `events/` folder
+### File Naming Conventions
+- Infrastructure adapters: `.adapter.ts` suffix
+- Use cases: `-use-case.ts` suffix
+- Application services: `.service.ts` suffix
+- Test files: `.test.ts` suffix alongside implementation
+- Event classes: In respective layer's `events/` folder
 
-### Code Quality
-- **Always run `pnpm tsc`** after implementing features to ensure type safety
-- Fix TypeScript errors immediately - no `any` or `as` unless absolutely necessary
-- Prefer satisfies operator over type assertions when possible
-- **Import Pattern**: Use combined syntax `import { foo, type Foo }` instead of separate type imports
-- **No TypeScript Errors Policy**: Zero tolerance for TypeScript errors in any implementation
+## Global Code Quality Standards
 
-### useEventBus Hook Design
-- **Manual Subscription Pattern**: `useEventBus` returns subscribe function that returns unsubscribe function
-- **No Automatic Cleanup**: Hook consumers manage their own cleanup via `useEffect` return
-- **Simplicity Over Magic**: Avoid complex internal state tracking, prefer explicit cleanup management
-- **Type Safety**: Hook enforces `T extends Event` constraint for compile-time event validation
+### TypeScript Requirements
+- **Always run `pnpm tsc`** after implementing features
+- Zero tolerance for TypeScript errors
+- Fix errors immediately - no `any` or `as` unless absolutely necessary
+- Prefer satisfies operator over type assertions
+- Use combined import syntax: `import { foo, type Foo }`
+
+### Import Patterns
+- Use `@/` path aliases for all cross-layer imports
+- Feature to shared: Relative paths `../../hooks/use-event-bus`
+- Combined import syntax: `import { service, type ServiceType }`
+
+## Module Registry
+
+- **Application Layer**: Use cases and services (`src/application/CLAUDE.md`)
+- **Presentation Layer**: UI components and hooks (`src/presentation/CLAUDE.md`)
+- **Event Bus Module**: Type-safe event communication (`src/infrastructure/event-bus/CLAUDE.md`)
+
+## Cross-Module Patterns
+
+### Event System (Used Across All Modules)
+- All events MUST extend base `Event<T>` class
+- EventBus methods enforce `T extends Event` constraints
+- useEventBus hook enforces same constraint
+- Manual subscription pattern: consumers manage cleanup
+- Event organization by architectural layer
+
+### Service Pattern (Application + Infrastructure)
+- Object-based dependency injection over multiple parameters
+- Export both class and singleton instance
+- Services coordinate use cases and maintain state
+
+### Hook Patterns (Presentation + Application Integration)
+- Split state queries from action commands
+- Manual EventBus subscription cleanup via useEffect
+- Type-safe event subscription with event classes
