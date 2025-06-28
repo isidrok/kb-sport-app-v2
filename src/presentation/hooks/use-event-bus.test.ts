@@ -26,15 +26,13 @@ describe('useEventBus', () => {
     expect(mockEventBus.publish).toHaveBeenCalledWith(testEvent)
   })
 
-  it('subscribe adds listener and cleans up', () => {
-    const { result, unmount } = renderHook(() => useEventBus(TestEvent))
+  it('subscribe adds listener and returns unsubscribe function', () => {
+    const { result } = renderHook(() => useEventBus(TestEvent))
     const listener = vi.fn()
     
-    result.current.subscribe(listener)
+    const unsubscribe = result.current.subscribe(listener)
     
     expect(mockEventBus.subscribe).toHaveBeenCalledWith(TestEvent, listener)
-    
-    unmount()
-    expect(mockUnsubscribe).toHaveBeenCalled()
+    expect(unsubscribe).toBe(mockUnsubscribe)
   })
 })
