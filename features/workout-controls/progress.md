@@ -1,7 +1,7 @@
 # Implementation Progress
 
 ## Current Status
-Working on: StartWorkoutUseCase
+Working on: StopWorkoutUseCase
 Phase: Phase 2 - Application Layer Use Cases
 
 ## Component: WorkoutEntity
@@ -106,3 +106,37 @@ StartCameraUseCase complete. Handles camera operations with proper event publish
 
 ### Notes
 StopCameraUseCase complete. Simple cleanup component that delegates to camera adapter stop method.
+
+## Component: StartWorkoutUseCase
+
+### Tests
+- [DONE] throws if workout not idle
+- [DONE] starts workout and publishes event
+- [DONE] sets workout start time
+
+### Documentation
+- API documentation: Complete
+- Complex logic documented: N/A
+
+### Refactorings Applied
+- None yet
+
+### Notes
+StartWorkoutUseCase complete. Validates workout state, starts workout, publishes status event with proper timing verification.
+
+## Component: StopWorkoutUseCase
+
+### Tests
+- [DONE] throws if workout not active
+- [DONE] stops workout and publishes event
+- [DONE] sets workout end time
+
+### Documentation
+- API documentation: Complete
+- Complex logic documented: N/A
+
+### Refactorings Applied
+- None yet
+
+### Notes
+StopWorkoutUseCase complete. Validates workout state, stops workout, publishes status event with proper timing verification.
