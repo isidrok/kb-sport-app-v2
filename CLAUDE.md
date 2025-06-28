@@ -76,3 +76,22 @@ This is a kettlebell workout tracking application built with Preact, TypeScript,
 - **Anti-patterns**: Don't test return types (TypeScript handles this), avoid complex async mocking
 - Use natural language test descriptions: "creates workout with idle status"
 - Clean mocking: Use `vi.mock()` and `vi.mocked()` patterns
+
+### Testing Patterns
+
+**Mocking Strategy:**
+- Use `vi.mock()` at module level for external dependencies
+- Access mocks with `vi.mocked()` for type-safe mock access
+- Avoid complex mock factories - keep mocks simple
+- For type issues with mocks, prefer `Partial<Type>` with type assertion over complex interfaces
+- Separate base classes (like Event) into their own files to avoid circular mock dependencies
+
+**File Naming:**
+- Infrastructure adapters use `.adapter.ts` suffix (e.g., `prediction.adapter.ts`)
+- Test files use `.test.ts` suffix alongside implementation files
+- Event classes in their respective layer's `events/` folder
+
+### Code Quality
+- **Always run `pnpm tsc`** after implementing features to ensure type safety
+- Fix TypeScript errors immediately - no `any` or `as` unless absolutely necessary
+- Prefer satisfies operator over type assertions when possible

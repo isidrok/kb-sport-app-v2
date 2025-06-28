@@ -17,19 +17,20 @@ src/infrastructure/event-bus/
 - **ALL** events MUST extend base `Event<T>` class
 - EventBus methods enforce `T extends Event` constraints:
   ```typescript
-  subscribe<T extends Event>(eventType: string, listener: (event: T) => void): () => void
-  publish<T extends Event>(eventType: string, event: T): void
+  subscribe<T extends Event>(eventClass: new (...args: any[]) => T, listener: (event: T) => void): () => void
+  publish<T extends Event>(event: T): void
   ```
 - useEventBus hook enforces same constraint:
   ```typescript
-  useEventBus<T extends Event>(eventType: string)
+  useEventBus<T extends Event>(eventClass: new (...args: any[]) => T)
   ```
 
 ### Event Organization by Layer
-- **Base Event class**: Lives in this module (`src/infrastructure/event-bus/`)
+- **Base Event class**: Lives in separate file (`src/infrastructure/event-bus/event.ts`)
 - **Application events**: `src/application/events/` (ModelLoading, CameraAccess)
 - **Domain events**: `src/domain/events/` (WorkoutStatus)
 - **Import pattern**: Always use `@/` path aliases
+- **IMPORTANT**: Import Event from `@/infrastructure/event-bus/event` not `event-bus`
 
 ## Module Conventions
 
@@ -41,7 +42,7 @@ export const eventBus = new EventBus()
 
 ### Event Class Structure
 ```typescript
-// Base class (lives here)
+// Base class (lives in event.ts)
 export abstract class Event<T = any> {
   constructor(public readonly data: T) {}
 }
@@ -52,6 +53,15 @@ export class ModelLoadingEvent extends Event<{
   message?: string
 }> {}
 ```
+
+### EventBus API Changes (v2)
+The EventBus now uses event classes as tokens instead of strings:
+- **Old**: `eventBus.publish('event-type', event)` 
+- **New**: `eventBus.publish(event)`
+- **Old**: `eventBus.subscribe('event-type', listener)`
+- **New**: `eventBus.subscribe(EventClass, listener)`
+
+This provides better type safety and eliminates string-based errors.
 
 ### Testing Patterns
 
@@ -82,11 +92,13 @@ vi.mock('@/path', async (importOriginal) => {
 ## API Documentation
 
 ### EventBus Class
-- `subscribe<T extends Event>(eventType: string, listener: (event: T) => void): () => void`
+- `subscribe<T extends Event>(eventClass: new (...args: any[]) => T, listener: (event: T) => void): () => void`
+  - Takes event class constructor as first parameter
   - Returns unsubscribe function for cleanup
   - Supports multiple listeners per event type
-- `publish<T extends Event>(eventType: string, event: T): void`
-  - Calls all registered listeners for event type
+- `publish<T extends Event>(event: T): void`
+  - Takes event instance directly
+  - Uses event's constructor as key internally
   - Type-safe with Event constraint
 
 ### Base Event Class
