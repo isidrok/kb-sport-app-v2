@@ -3,7 +3,7 @@ import { useFrameProcessing } from './use-frame-processing'
 import { useWorkoutState } from './use-workout-state'
 import { workoutService } from '@/application/services/workout.service'
 import { WorkoutStatus } from '@/domain/entities/workout-entity'
-import { vi, beforeEach, afterEach, describe, it, expect, type Mocked } from 'vitest'
+import { vi, beforeEach, afterEach, describe, it, expect } from 'vitest'
 import { createRef } from 'preact'
 
 vi.mock('./use-workout-state')
@@ -82,7 +82,7 @@ describe('useFrameProcessing', () => {
     })
 
     // Capture the frame processing function
-    let frameProcessor: Function
+    let frameProcessor: Function | undefined
     mockRequestAnimationFrame.mockImplementation((fn) => {
       frameProcessor = fn
       return 123
@@ -91,7 +91,9 @@ describe('useFrameProcessing', () => {
     renderHook(() => useFrameProcessing(mockVideoRef, mockCanvasRef))
 
     // Call the frame processor
-    frameProcessor()
+    if (frameProcessor) {
+      frameProcessor()
+    }
 
     expect(mockWorkoutService.processFrame).toHaveBeenCalledWith(
       mockVideoRef.current,
