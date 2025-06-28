@@ -52,18 +52,20 @@ export class WorkoutService {
     return this._currentWorkout
   }
 
-  get currentWorkout(): WorkoutEntity {
-    if (!this._currentWorkout) {
-      throw new Error('No workout created. Call createWorkout() first.')
-    }
+  get currentWorkout(): WorkoutEntity | null {
     return this._currentWorkout
   }
 
   async startWorkout(videoElement: HTMLVideoElement, canvasElement: HTMLCanvasElement): Promise<void> {
+    // Create workout if none exists
+    if (!this._currentWorkout) {
+      this.createWorkout()
+    }
+
     this.setElementDimensions(videoElement, canvasElement)
 
     await this.startCameraUseCase.execute(videoElement)
-    this.startWorkoutUseCase.execute(this.currentWorkout)
+    this.startWorkoutUseCase.execute(this._currentWorkout!)
   }
 
   private setElementDimensions(videoElement: HTMLVideoElement, canvasElement: HTMLCanvasElement): void {
@@ -77,16 +79,21 @@ export class WorkoutService {
   }
 
   stopWorkout(): void {
+    if (!this._currentWorkout) return
+    
     this.stopCameraUseCase.execute()
-    this.stopWorkoutUseCase.execute(this.currentWorkout)
+    this.stopWorkoutUseCase.execute(this._currentWorkout)
   }
 
   processFrame(videoElement: HTMLVideoElement, canvasElement: HTMLCanvasElement): void {
     this.processFrameUseCase.execute(videoElement, canvasElement)
   }
 
-  getWorkoutStatus(): WorkoutStats {
-    return this.getWorkoutStatusUseCase.execute(this.currentWorkout)
+  getWorkoutStatus(): WorkoutStats | null {
+    if (!this._currentWorkout) {
+      return null
+    }
+    return this.getWorkoutStatusUseCase.execute(this._currentWorkout)
   }
 }
 

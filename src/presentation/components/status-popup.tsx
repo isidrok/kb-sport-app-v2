@@ -1,3 +1,5 @@
+import styles from './status-popup.module.css'
+
 interface StatusPopupProps {
   message?: string
   type: 'loading' | 'error'
@@ -8,7 +10,7 @@ export function StatusPopup({ message, type, visible }: StatusPopupProps) {
   if (!visible) return null
 
   return (
-    <div className={`status-popup ${type}`}>
+    <div className={`${styles.statusPopup} ${styles[type]}`}>
       {message}
     </div>
   )

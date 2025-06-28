@@ -1,6 +1,7 @@
 import { RefObject } from 'preact'
 import { useWorkoutState } from '../hooks/use-workout-state'
 import { useWorkoutActions } from '../hooks/use-workout-actions'
+import styles from './workout-controls.module.css'
 
 interface WorkoutControlsProps {
   videoRef: RefObject<HTMLVideoElement>
@@ -20,7 +21,7 @@ export function WorkoutControls({ videoRef, canvasRef }: WorkoutControlsProps) {
   }
 
   return (
-    <button disabled={isStarting} onClick={handleClick}>
+    <button className={styles.workoutButton} disabled={isStarting} onClick={handleClick}>
       {canStart ? 'Start' : 'Stop'}
     </button>
   )

@@ -1,0 +1,52 @@
+.workoutButton {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  
+  /* Frosted glass effect */
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50px;
+  
+  /* Button styling */
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  /* Touch-friendly sizing */
+  min-width: 120px;
+  min-height: 56px;
+}
+
+.workoutButton:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateX(-50%) translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.workoutButton:active:not(:disabled) {
+  transform: translateX(-50%) translateY(0);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.workoutButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+  .workoutButton {
+    bottom: 1.5rem;
+    padding: 1.2rem 2.5rem;
+    font-size: 1.2rem;
+    min-height: 60px;
+  }
+}
