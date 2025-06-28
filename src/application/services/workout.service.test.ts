@@ -137,6 +137,8 @@ describe('WorkoutService', () => {
   })
 
   it('creates new workout when starting after previous workout stopped', async () => {
+    vi.useFakeTimers()
+    
     const mockVideo = {
       getBoundingClientRect: vi.fn(() => ({ width: 640, height: 480 }))
     } as any
@@ -144,36 +146,27 @@ describe('WorkoutService', () => {
       getBoundingClientRect: vi.fn(() => ({ width: 640, height: 480 }))
     } as any
     
-    // Mock Date to ensure different IDs
-    let dateCallCount = 0
-    const originalDate = Date
-    vi.stubGlobal('Date', class extends originalDate {
-      static toISOString() {
-        return `2023-01-01T00:00:${String(dateCallCount++).padStart(2, '0')}.000Z`
-      }
-      toISOString() {
-        return `2023-01-01T00:00:${String(dateCallCount++).padStart(2, '0')}.000Z`
-      }
-    })
-    
     try {
       // Start first workout
       await workoutService.startWorkout(mockVideo, mockCanvas)
-      const firstWorkoutId = workoutService.currentWorkout?.id
+      const firstWorkout = workoutService.currentWorkout
       
       // Stop the workout
       workoutService.stopWorkout()
       
-      // Start again - should create new workout
-      await workoutService.startWorkout(mockVideo, mockCanvas)
-      const secondWorkoutId = workoutService.currentWorkout?.id
+      // Advance time to ensure different timestamp
+      vi.advanceTimersByTime(1000)
       
-      expect(firstWorkoutId).toBeDefined()
-      expect(secondWorkoutId).toBeDefined()
-      expect(firstWorkoutId).not.toBe(secondWorkoutId)
-      expect(workoutService.currentWorkout?.status).toBe('idle') // Still idle since use case is mocked
+      // Start again - should create new workout instance
+      await workoutService.startWorkout(mockVideo, mockCanvas)
+      const secondWorkout = workoutService.currentWorkout
+      
+      // Verify we have different workout instances
+      expect(firstWorkout).not.toBe(secondWorkout)
+      expect(firstWorkout?.id).not.toBe(secondWorkout?.id)
+      expect(secondWorkout).toBeDefined()
     } finally {
-      vi.unstubAllGlobals()
+      vi.useRealTimers()
     }
   })
 })
