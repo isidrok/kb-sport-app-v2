@@ -54,7 +54,7 @@ After implementing each feature:
 ```bash
 pnpm tsc
 ```
-Fix any TypeScript errors immediately.
+**CRITICAL**: Fix any TypeScript errors immediately. Zero tolerance policy for TypeScript errors.
 
 ## Testing Best Practices
 
@@ -68,17 +68,19 @@ Use natural language that describes behavior:
 ### Mocking Strategy
 Keep mocks simple and type-safe:
 ```typescript
+import { Mocked } from 'vitest'
+
 // Module-level mocks
 vi.mock('@/infrastructure/event-bus/event-bus')
 vi.mock('@/infrastructure/adapters/prediction.adapter')
 
-// Access mocks with vi.mocked()
-const mockEventBus = vi.mocked(eventBus)
-const mockAdapter = vi.mocked(predictionAdapter)
+// Create clean mocks using Partial pattern
+let mockService: Mocked<ServiceType>
 
-// Clear mocks between tests
 beforeEach(() => {
-  vi.clearAllMocks()
+  mockService = {
+    execute: vi.fn()
+  } as Partial<ServiceType> as Mocked<ServiceType>
 })
 ```
 
@@ -119,6 +121,54 @@ describe('LoadModelUseCase', () => {
 ```
 
 ## Common Patterns
+
+### Service Constructor Pattern
+Use object-based dependency injection:
+```typescript
+// Define dependencies interface
+interface ServiceDependencies {
+  useCase1: UseCase1
+  useCase2: UseCase2
+  useCase3: UseCase3
+}
+
+// Service implementation
+export class MyService {
+  private useCase1: UseCase1
+  private useCase2: UseCase2
+  private useCase3: UseCase3
+
+  constructor(dependencies: ServiceDependencies) {
+    this.useCase1 = dependencies.useCase1
+    this.useCase2 = dependencies.useCase2
+    this.useCase3 = dependencies.useCase3
+  }
+}
+
+// Singleton export
+export const myService = new MyService({
+  useCase1: useCase1Instance,
+  useCase2: useCase2Instance,
+  useCase3: useCase3Instance
+})
+```
+
+### Import Organization
+```typescript
+// ✅ Combine value and type imports
+import { service, type ServiceType } from '@/path/to/service'
+
+// ❌ Avoid separate imports
+import { service } from '@/path/to/service'
+import type { ServiceType } from '@/path/to/service'
+```
+
+### Entity ID Generation
+```typescript
+// Use consistent format for entity IDs
+const workoutId = `workout_${new Date().toISOString()}`
+const sessionId = `session_${new Date().toISOString()}`
+```
 
 ### Event-Driven Testing
 When testing event publishers:
@@ -162,6 +212,9 @@ expect(workout._internalState).toBe(...)
 4. **Testing Implementation**: Focus on behavior
 5. **Complex Mock Factories**: Keep mocks simple
 6. **Testing CSS/Styling**: Not unit test responsibility
+7. **Multiple Constructor Parameters**: Use object-based dependency injection
+8. **Separate Type Imports**: Use `import { foo, type Foo }` pattern
+9. **Any TypeScript Errors**: Zero tolerance for compilation errors
 
 ## Incremental Development
 

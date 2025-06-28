@@ -52,6 +52,8 @@ This is a kettlebell workout tracking application built with Preact, TypeScript,
 - Use cases focused on single business operations
 - Application services coordinate multiple use cases
 - All services and use cases exported as singletons
+- **Constructor Pattern**: Services use object-based dependency injection instead of multiple parameters
+- **ID Generation**: Use `workout_${new Date().toISOString()}` format for entity IDs
 
 **Event-Driven Architecture:**
 - EventBus in infrastructure layer for async communication
@@ -81,13 +83,16 @@ This is a kettlebell workout tracking application built with Preact, TypeScript,
 
 **Mocking Strategy:**
 - Use `vi.mock()` at module level for external dependencies
-- Access mocks with `vi.mocked()` for type-safe mock access
+- Import `Mocked` type from vitest: `import { Mocked } from 'vitest'`
+- Create mocks using object literals with `Partial<Type> as Mocked<Type>` pattern
 - Avoid complex mock factories - keep mocks simple
 - For type issues with mocks, prefer `Partial<Type>` with type assertion over complex interfaces
 - Separate base classes (like Event) into their own files to avoid circular mock dependencies
 
 **File Naming:**
 - Infrastructure adapters use `.adapter.ts` suffix (e.g., `prediction.adapter.ts`)
+- Use cases use `-use-case.ts` suffix (e.g., `start-camera-use-case.ts`)
+- Application services use `.service.ts` suffix (e.g., `workout.service.ts`)
 - Test files use `.test.ts` suffix alongside implementation files
 - Event classes in their respective layer's `events/` folder
 
@@ -95,3 +100,5 @@ This is a kettlebell workout tracking application built with Preact, TypeScript,
 - **Always run `pnpm tsc`** after implementing features to ensure type safety
 - Fix TypeScript errors immediately - no `any` or `as` unless absolutely necessary
 - Prefer satisfies operator over type assertions when possible
+- **Import Pattern**: Use combined syntax `import { foo, type Foo }` instead of separate type imports
+- **No TypeScript Errors Policy**: Zero tolerance for TypeScript errors in any implementation
