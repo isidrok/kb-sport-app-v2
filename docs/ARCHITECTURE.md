@@ -20,19 +20,51 @@ This application follows Domain-Driven Design (DDD) with Clean Architecture to s
 - Clear boundaries between layers
 - Easier testing and maintenance
 
-### Event-Driven Communication
+### Event-Driven Communication with Type Safety
 **Date**: 2025-06-28  
 **Context**: Need async communication between ML model loading, camera access, and UI updates  
-**Decision**: Implement EventBus in infrastructure layer with typed event classes  
+**Decision**: Implement EventBus in infrastructure layer with strict typed event classes  
 **Rationale**: 
 - Decouples components from direct dependencies
 - Supports multiple subscribers for same events
 - Clean async state management
+- Type safety prevents runtime errors
 - Future-proof for additional event types
 **Consequences**: 
 - Additional complexity for simple operations
 - Clear async communication patterns
 - Easier to add new event subscribers
+- Compile-time event validation
+
+### Event System Type Constraints
+**Date**: 2025-06-28  
+**Context**: Need to ensure all events follow consistent structure and prevent plain object usage  
+**Decision**: Enforce `T extends Event` constraints in EventBus and useEventBus APIs  
+**Rationale**: 
+- Prevents accidental plain object publishing
+- Ensures consistent event structure across application
+- Compile-time validation of event types
+- Clear separation between events and regular data
+**Consequences**: 
+- All events must extend base Event class
+- TypeScript will catch improper event usage
+- Consistent event patterns across codebase
+- Additional type safety overhead
+
+### Event Organization by Architecture Layer
+**Date**: 2025-06-28  
+**Context**: Events serve different purposes across clean architecture layers  
+**Decision**: Organize events by their architectural responsibility  
+**Rationale**: 
+- Base Event class belongs in infrastructure (mechanism)
+- Application events handle coordination between layers
+- Domain events represent business state changes
+- Clear ownership and responsibility
+**Consequences**: 
+- Event location indicates its purpose
+- Clear import patterns using @/ aliases
+- Maintainable event organization
+- Easier to understand event scope
 
 ### Singleton Pattern for Services
 **Date**: 2025-06-28  
@@ -109,9 +141,32 @@ WorkoutService → Domain Entity → useWorkoutState hook → UI Components
 
 ## Testing Strategy
 
-- **Domain**: Unit tests for entities and business rules
+### TDD Implementation Process
+**Date**: 2025-06-28  
+**Context**: Need consistent, reliable testing approach for complex domain logic  
+**Decision**: Implement strict Test-Driven Development with RED-GREEN-REFACTOR cycles  
+**Rationale**: 
+- Ensures comprehensive test coverage
+- Drives better API design
+- Prevents over-engineering
+- Forces focus on behavior over implementation
+**Consequences**: 
+- Development takes more upfront time
+- Higher code quality and confidence
+- Better documentation through tests
+- Natural refactoring opportunities
+
+### Testing Anti-Patterns
+Established patterns to avoid:
+- ❌ Testing return types (TypeScript handles this)
+- ❌ Complex async mocking with importOriginal
+- ❌ Technical test names (use natural language)
+- ❌ Testing TypeScript constraints directly
+
+### Layer-Specific Testing
+- **Domain**: Unit tests for entities and business rules with natural language descriptions
 - **Application**: Unit tests for use cases with mocked adapters
-- **Infrastructure**: Integration tests for adapters
-- **Presentation**: Component tests with Testing Library
+- **Infrastructure**: Integration tests for adapters, clean mocking with vi.mocked()
+- **Presentation**: Component tests with Testing Library, focus on user interactions
 
 Focus on behavior testing, not implementation details or CSS classes.

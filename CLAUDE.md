@@ -55,8 +55,11 @@ This is a kettlebell workout tracking application built with Preact, TypeScript,
 
 **Event-Driven Architecture:**
 - EventBus in infrastructure layer for async communication
-- Event classes extending base Event<T> for type safety
+- **CRITICAL**: All events MUST extend base Event<T> class - enforced by TypeScript constraints
+- Event organization: Base Event (infrastructure), Application events (application/events), Domain events (domain/events)
+- EventBus and useEventBus both enforce `T extends Event` constraints
 - Hooks use publish/subscribe pattern for UI integration
+- Import pattern: Use `@/` path aliases for all imports
 
 **Component Patterns:**
 - Hooks split between state (useWorkoutState) and actions (useWorkoutActions)
@@ -67,5 +70,9 @@ This is a kettlebell workout tracking application built with Preact, TypeScript,
 - Vitest with happy-dom environment
 - Global test setup in `src/test-setup.ts`
 - Testing Library for Preact components
+- **Strict TDD**: RED-GREEN-REFACTOR cycle required
 - Test behavior, not implementation details
 - No testing of CSS classes or styling
+- **Anti-patterns**: Don't test return types (TypeScript handles this), avoid complex async mocking
+- Use natural language test descriptions: "creates workout with idle status"
+- Clean mocking: Use `vi.mock()` and `vi.mocked()` patterns

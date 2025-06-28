@@ -2,12 +2,25 @@
 
 ## Workflow
 
-This project follows **Test-Driven Development (TDD)** with behavior-focused testing:
+This project follows **Strict Test-Driven Development (TDD)** with behavior-focused testing:
 
-1. Write failing test for desired behavior
-2. Implement minimal code to pass test
-3. Refactor while keeping tests green
-4. Repeat for next behavior
+### TDD Cycle (MANDATORY)
+1. **RED Phase**: Write failing test with natural language description
+   - Test names use natural language: "creates workout with idle status"
+   - Test should fail for the right reason (missing implementation)
+   - Run test to confirm it fails
+
+2. **GREEN Phase**: Write minimal code to pass test
+   - No extra functionality beyond making test pass
+   - No premature optimization
+   - Resist adding code for future tests
+
+3. **REFACTOR Phase**: Improve code while keeping tests green
+   - Make one improvement at a time
+   - Run tests after each change
+   - Focus on structure, not behavior
+
+4. **Repeat**: Move to next test in sequence
 
 ## Commands
 
@@ -115,6 +128,30 @@ interface WorkoutControlsProps {
 - No testing of CSS classes or styling
 - Test state changes and side effects
 
+**Testing Anti-Patterns (DO NOT DO):**
+- ❌ Testing return types: `expect(typeof result.current.publish).toBe('function')`
+- ❌ Complex async mocking with importOriginal
+- ❌ Technical test names: `test_create_workout_with_idle_status`
+- ❌ Testing TypeScript constraints (TypeScript handles this)
+
+**Testing Best Practices (DO THIS):**
+- ✅ Natural language test names: "creates workout with idle status"
+- ✅ Simple mocking: `vi.mock()` + `vi.mocked()`
+- ✅ Test actual behavior and side effects
+- ✅ Clean setup with `beforeEach` for mock configuration
+
+**Event System Testing:**
+```typescript
+// Clean mocking pattern
+vi.mock('@/infrastructure/event-bus/event-bus')
+const mockEventBus = vi.mocked(eventBus)
+
+beforeEach(() => {
+  vi.clearAllMocks()
+  mockEventBus.subscribe.mockReturnValue(mockUnsubscribe)
+})
+```
+
 **Test Organization:**
 ```typescript
 // Use cases: Mock adapters, test business logic
@@ -141,6 +178,13 @@ test_[hook]_[state_change_behavior]
 - Proper cleanup on stop
 
 ### Event System
+- **CRITICAL**: All events MUST extend base Event<T> class
+- EventBus enforces `T extends Event` constraint in publish/subscribe methods
+- useEventBus hook enforces same constraint
+- Event organization by layer:
+  - Base Event class: `src/infrastructure/event-bus/`
+  - Application events: `src/application/events/`
+  - Domain events: `src/domain/events/`
 - All async operations use EventBus
 - Events are typed with specific data payloads
 - UI subscribes to events, business logic publishes
