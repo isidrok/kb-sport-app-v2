@@ -15,8 +15,8 @@ export function WorkoutControls({ videoRef, canvasRef }: WorkoutControlsProps) {
   const handleClick = async () => {
     if (canStart && videoRef.current && canvasRef.current) {
       await startWorkout(videoRef.current, canvasRef.current)
-    } else if (canStop) {
-      stopWorkout()
+    } else if (canStop && canvasRef.current) {
+      stopWorkout(canvasRef.current)
     }
   }
 

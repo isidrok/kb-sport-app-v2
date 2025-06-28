@@ -78,11 +78,11 @@ export class WorkoutService {
     canvasElement.height = canvasRect.height
   }
 
-  stopWorkout(): void {
+  stopWorkout(canvasElement?: HTMLCanvasElement): void {
     if (!this._currentWorkout) return
     
     this.stopCameraUseCase.execute()
-    this.stopWorkoutUseCase.execute(this._currentWorkout)
+    this.stopWorkoutUseCase.execute(this._currentWorkout, canvasElement)
   }
 
   processFrame(videoElement: HTMLVideoElement, canvasElement: HTMLCanvasElement): void {

@@ -29,8 +29,8 @@ export function useWorkoutActions() {
     }
   }
 
-  const stopWorkout = () => {
-    workoutService.stopWorkout()
+  const stopWorkout = (canvasElement?: HTMLCanvasElement) => {
+    workoutService.stopWorkout(canvasElement)
   }
 
   return {

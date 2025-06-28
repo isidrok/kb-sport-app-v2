@@ -113,7 +113,7 @@ describe('WorkoutService', () => {
     workoutService.stopWorkout()
 
     expect(mockStopCameraUseCase.execute).toHaveBeenCalled()
-    expect(mockStopWorkoutUseCase.execute).toHaveBeenCalledWith(workout)
+    expect(mockStopWorkoutUseCase.execute).toHaveBeenCalledWith(workout, undefined)
   })
 
   it('delegates process frame to use case', () => {
