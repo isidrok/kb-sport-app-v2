@@ -101,6 +101,36 @@ describe('useFrameProcessing', () => {
     )
   })
 
+  it('stops frame processing when workout status changes from active to stopped', () => {
+    // Start with active workout
+    mockUseWorkoutState.mockReturnValue({
+      status: WorkoutStatus.ACTIVE,
+      canStart: false,
+      canStop: true,
+      startTime: new Date(),
+      endTime: null
+    })
+
+    const { rerender } = renderHook(() => useFrameProcessing(mockVideoRef, mockCanvasRef))
+
+    // Verify frame processing started
+    expect(mockRequestAnimationFrame).toHaveBeenCalledWith(expect.any(Function))
+    
+    // Change workout status to stopped
+    mockUseWorkoutState.mockReturnValue({
+      status: WorkoutStatus.STOPPED,
+      canStart: true,
+      canStop: false,
+      startTime: new Date(),
+      endTime: new Date()
+    })
+    
+    rerender()
+
+    // Verify animation frame was canceled
+    expect(mockCancelAnimationFrame).toHaveBeenCalledWith(123)
+  })
+
   it('cancels animation frame on cleanup', () => {
     mockUseWorkoutState.mockReturnValue({
       status: WorkoutStatus.ACTIVE,
