@@ -1,8 +1,8 @@
 # Implementation Progress
 
 ## Current Status
-Working on: StartCameraUseCase
-Phase: Starting
+Working on: StartWorkoutUseCase
+Phase: Phase 2 - Application Layer Use Cases
 
 ## Component: WorkoutEntity
 
@@ -78,16 +78,31 @@ Preloads ML model with loading/ready/error event feedback.
 ## Component: StartCameraUseCase
 
 ### Tests
-- [TODO] test_publishes_requesting_camera_event
-- [TODO] test_starts_camera_and_publishes_ready
-- [TODO] test_publishes_error_on_access_denied
+- [DONE] publishes requesting camera event on start
+- [DONE] starts camera and publishes ready event  
+- [DONE] publishes error event on camera access denied
 
 ### Documentation
-- API documentation: TODO
+- API documentation: Complete
 - Complex logic documented: N/A
 
 ### Refactorings Applied
 - Updated plan.md to move dimension setting responsibility to WorkoutService
 
 ### Notes
-Plan updated: StartCameraUseCase now only handles camera operations, not canvas dimensions. WorkoutService will handle element setup.
+StartCameraUseCase complete. Handles camera operations with proper event publishing for requesting/ready/error states. Error handling includes message propagation and re-throwing for upstream handling.
+
+## Component: StopCameraUseCase
+
+### Tests
+- [DONE] stops camera adapter
+
+### Documentation
+- API documentation: Complete
+- Complex logic documented: N/A
+
+### Refactorings Applied
+- Removed unnecessary double-stop test (not a valid use case)
+
+### Notes
+StopCameraUseCase complete. Simple cleanup component that delegates to camera adapter stop method.
