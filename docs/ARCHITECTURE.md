@@ -170,3 +170,37 @@ Established patterns to avoid:
 - **Presentation**: Component tests with Testing Library, focus on user interactions
 
 Focus on behavior testing, not implementation details or CSS classes.
+
+### Presentation Layer Organization
+**Date**: 2025-06-28  
+**Context**: Need clear separation between shared components and feature-specific presentation logic  
+**Decision**: Organize presentation layer with explicit shared vs feature-specific boundaries  
+**Rationale**: 
+- Shared components (StatusPopup) are truly reusable across features
+- Feature-specific components (WorkoutControls) belong with their domain
+- App-level hooks (useEventBus, useModelLoading) serve multiple features
+- Feature hooks (useWorkoutState, useWorkoutActions) are domain-specific
+- Clear import patterns prevent circular dependencies
+**Consequences**: 
+- Better code organization and discoverability
+- Cleaner separation of concerns
+- Easier to identify reusable vs feature-specific code
+- Consistent import patterns across features
+- Scalable architecture for future features
+
+### useEventBus Hook Simplification
+**Date**: 2025-06-28  
+**Context**: Initial useEventBus had complex automatic cleanup with ref tracking causing confusion  
+**Decision**: Simplify to manual subscription pattern where consumers manage cleanup  
+**Rationale**: 
+- Explicit is better than implicit for lifecycle management
+- Reduces hook complexity and internal state
+- Follows React patterns where consumers control effect cleanup
+- Easier to understand and debug
+- Avoids Rules of Hooks violations from attempting useEffect inside useCallback
+**Consequences**: 
+- Slightly more verbose consumer code
+- Clear ownership of subscription lifecycle
+- No hidden internal state or complex cleanup logic
+- Better performance due to simpler hook implementation
+- Consistent with React ecosystem patterns

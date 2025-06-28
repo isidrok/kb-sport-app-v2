@@ -35,8 +35,12 @@ This is a kettlebell workout tracking application built with Preact, TypeScript,
   - `adapters/`: External API integrations (camera, ML model, rendering)
   - `event-bus/`: Event system for async communication (singleton)
 - **Presentation Layer** (`src/presentation/`): UI components and hooks
-  - `hooks/`: Custom hooks for state management and actions
-  - `components/`: UI components with CSS modules
+  - `hooks/`: Shared/app-level hooks (useEventBus, useModelLoading)
+  - `components/`: Shared, reusable UI components (StatusPopup)
+  - `feature/`: Feature-specific presentation logic
+    - `feature/hooks/`: Feature-specific hooks (useWorkoutState, useWorkoutActions)
+    - `feature/components/`: Feature-specific components (WorkoutControls)
+    - `feature/feature-page.tsx`: Main feature page component
   - Clean architecture with CSS modules for styling
 
 ### Key Features
@@ -67,6 +71,12 @@ This is a kettlebell workout tracking application built with Preact, TypeScript,
 - Hooks split between state (useWorkoutState) and actions (useWorkoutActions)
 - Components receive refs for video/canvas elements
 - Video/canvas dimensions set from getBoundingClientRect before camera start
+
+**Presentation Layer Organization:**
+- **Shared vs Feature-Specific**: Separate shared/reusable components from feature-specific ones
+- **Hook Organization**: App-level hooks (useEventBus, useModelLoading) in `presentation/hooks/`, feature hooks in `presentation/feature/hooks/`
+- **Component Organization**: Generic components (StatusPopup) in `presentation/components/`, feature components in `presentation/feature/components/`
+- **Import Patterns**: Feature hooks import shared hooks via relative paths (`../../hooks/use-event-bus`)
 
 ### Testing Setup
 - Vitest with happy-dom environment
@@ -102,3 +112,9 @@ This is a kettlebell workout tracking application built with Preact, TypeScript,
 - Prefer satisfies operator over type assertions when possible
 - **Import Pattern**: Use combined syntax `import { foo, type Foo }` instead of separate type imports
 - **No TypeScript Errors Policy**: Zero tolerance for TypeScript errors in any implementation
+
+### useEventBus Hook Design
+- **Manual Subscription Pattern**: `useEventBus` returns subscribe function that returns unsubscribe function
+- **No Automatic Cleanup**: Hook consumers manage their own cleanup via `useEffect` return
+- **Simplicity Over Magic**: Avoid complex internal state tracking, prefer explicit cleanup management
+- **Type Safety**: Hook enforces `T extends Event` constraint for compile-time event validation
