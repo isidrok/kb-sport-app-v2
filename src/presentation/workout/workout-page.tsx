@@ -3,11 +3,12 @@ import styles from "./workout-page.module.css";
 import { WorkoutControls } from "./components/workout-controls";
 import { StatusPopup } from "../components/status-popup";
 import { useModelLoading } from "../hooks/use-model-loading";
+import { useFrameProcessing } from "./hooks/use-frame-processing";
 import { loadModelUseCase } from "@/application/use-cases/load-model-use-case";
 
 /**
  * Main workout page with camera feed, pose detection, and real-time statistics.
- * Provides complete kettlebell tracking interface with glass styling.
+ * Provides complete training interface with glass styling.
  */
 export function WorkoutPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -19,6 +20,8 @@ export function WorkoutPage() {
       // Error is handled by the use case and published as event
     });
   }, []);
+
+  useFrameProcessing(videoRef, canvasRef);
 
   const showStatusPopup = status === 'loading' || status === 'error';
 
