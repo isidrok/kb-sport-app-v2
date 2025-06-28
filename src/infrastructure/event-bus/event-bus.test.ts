@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
-import { EventBus, Event } from './event-bus'
+import { EventBus } from './event-bus'
+import { Event } from './event'
 
 class TestEvent extends Event<{ data: string }> {}
 

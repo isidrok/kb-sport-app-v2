@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook } from '@testing-library/preact'
 import { useEventBus } from './use-event-bus'
-import { eventBus, Event } from '@/infrastructure/event-bus/event-bus'
+import { eventBus } from '@/infrastructure/event-bus/event-bus'
+import { Event } from '@/infrastructure/event-bus/event'
 
 vi.mock('@/infrastructure/event-bus/event-bus')
 

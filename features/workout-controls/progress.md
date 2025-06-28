@@ -1,8 +1,8 @@
 # Implementation Progress
 
 ## Current Status
-Working on: useEventBus Hook
-Phase: Completed
+Working on: StartCameraUseCase
+Phase: Starting
 
 ## Component: WorkoutEntity
 
@@ -56,3 +56,21 @@ Implementing lightweight event system for async communication between layers.
 
 ### Notes
 Easy event subscription/publishing from components with automatic cleanup.
+
+## Component: LoadModelUseCase
+
+### Tests
+- [DONE] publishes loading event on start
+- [DONE] publishes ready event on success  
+- [DONE] publishes error event on failure
+- [DONE] initializes prediction adapter
+
+### Documentation
+- API documentation: Complete
+- Complex logic documented: N/A
+
+### Refactorings Applied
+- None yet
+
+### Notes
+Preloads ML model with loading/ready/error event feedback.

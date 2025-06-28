@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from 'preact/hooks'
-import { eventBus, Event } from '@/infrastructure/event-bus/event-bus'
+import { eventBus } from '@/infrastructure/event-bus/event-bus'
+import { Event } from '@/infrastructure/event-bus/event'
 
 /**
  * Hook for easy event subscription/publishing from components.
