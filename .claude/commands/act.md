@@ -46,7 +46,7 @@ Separate structural changes from behavioral changes. Make code tidier before cha
 - Show all tests passing
 - Run linter and fix any issues
 - Ask user: "I've completed [component name]. All tests are passing. Should I proceed to the next component?"
-- Wait for user feedback
+- Wait for user feedback even if in auto-accept mode
 
 ## Progress Tracking
 
@@ -64,15 +64,6 @@ Update `features/[feature-name]/progress.md`:
     - [DONE] test_[behavior]
     - [IN PROGRESS] test_[behavior]
     - [TODO] test_[behavior]
-
-    ### Documentation
-    - API documentation: [Complete/Partial/TODO]
-    - Complex logic documented: [Yes/No]
-
-    ### Refactorings Applied
-    - Extracted method: [name] to reduce duplication
-    - Renamed: [old] to [new] for clarity
-    - Extracted constant: [CONSTANT_NAME]
 
     ### Notes
     [Any important decisions or observations]
