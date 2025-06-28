@@ -57,10 +57,8 @@ export class WorkoutService {
   }
 
   async startWorkout(videoElement: HTMLVideoElement, canvasElement: HTMLCanvasElement): Promise<void> {
-    // Create workout if none exists
-    if (!this._currentWorkout) {
-      this.createWorkout()
-    }
+    // Always create a new workout when starting
+    this.createWorkout()
 
     this.setElementDimensions(videoElement, canvasElement)
 
