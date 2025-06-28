@@ -44,4 +44,11 @@ describe('GetWorkoutStatusUseCase', () => {
     expect(stats.canStart).toBe(false)
     expect(stats.canStop).toBe(true)
   })
+
+  it('can start again when stopped', () => {
+    const stats = useCase.execute(stoppedWorkout)
+
+    expect(stats.canStart).toBe(true)
+    expect(stats.canStop).toBe(false)
+  })
 })

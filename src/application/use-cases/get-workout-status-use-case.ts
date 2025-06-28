@@ -14,7 +14,7 @@ export class GetWorkoutStatusUseCase {
       status: workout.status,
       startTime: workout.startTime,
       endTime: workout.endTime,
-      canStart: workout.status === WorkoutStatus.IDLE,
+      canStart: workout.status === WorkoutStatus.IDLE || workout.status === WorkoutStatus.STOPPED,
       canStop: workout.status === WorkoutStatus.ACTIVE
     }
   }
