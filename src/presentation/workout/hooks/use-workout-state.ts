@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'preact/hooks'
-import { useEventBus } from './use-event-bus'
+import { useEventBus } from '../../hooks/use-event-bus'
 import { workoutService } from '@/application/services/workout.service'
 import { WorkoutStatusEvent } from '@/domain/events/workout-status-event'
 

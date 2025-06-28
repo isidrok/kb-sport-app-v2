@@ -8,7 +8,7 @@ import { WorkoutStatus } from '@/domain/entities/workout-entity'
 const mockSubscribe = vi.fn()
 const mockUnsubscribe = vi.fn()
 
-vi.mock('./use-event-bus', () => ({
+vi.mock('../../hooks/use-event-bus', () => ({
   useEventBus: () => ({
     subscribe: mockSubscribe,
     publish: vi.fn()

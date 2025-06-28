@@ -7,7 +7,7 @@ import { CameraAccessEvent } from '@/application/events/camera-access-event'
 const mockSubscribe = vi.fn()
 const mockUnsubscribe = vi.fn()
 
-vi.mock('./use-event-bus', () => ({
+vi.mock('../../hooks/use-event-bus', () => ({
   useEventBus: () => ({
     subscribe: mockSubscribe,
     publish: vi.fn()
