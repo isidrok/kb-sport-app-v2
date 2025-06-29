@@ -4,6 +4,7 @@ import { StartWorkoutUseCase } from '@/application/use-cases/start-workout-use-c
 import { StopWorkoutUseCase } from '@/application/use-cases/stop-workout-use-case'
 import { GetWorkoutStatusUseCase } from '@/application/use-cases/get-workout-status-use-case'
 import type { PoseService } from './pose.service'
+import type { PreviewService } from './preview.service'
 
 vi.mock('@/application/use-cases/start-workout-use-case')
 vi.mock('@/application/use-cases/stop-workout-use-case')
@@ -15,6 +16,7 @@ describe('WorkoutService', () => {
   let mockStopWorkoutUseCase: Mocked<StopWorkoutUseCase>
   let mockGetWorkoutStatusUseCase: Mocked<GetWorkoutStatusUseCase>
   let mockPoseService: Mocked<PoseService>
+  let mockPreviewService: Mocked<PreviewService>
 
   beforeEach(() => {
     mockStartWorkoutUseCase = {
@@ -36,11 +38,19 @@ describe('WorkoutService', () => {
       isActive: vi.fn().mockReturnValue(false)
     } as Partial<PoseService> as Mocked<PoseService>
 
+    mockPreviewService = {
+      startPreview: vi.fn(),
+      stopPreview: vi.fn(),
+      stopPreviewOnly: vi.fn(),
+      isPreviewActive: vi.fn().mockReturnValue(false)
+    } as Partial<PreviewService> as Mocked<PreviewService>
+
     workoutService = new WorkoutService({
       startWorkoutUseCase: mockStartWorkoutUseCase,
       stopWorkoutUseCase: mockStopWorkoutUseCase,
       getWorkoutStatusUseCase: mockGetWorkoutStatusUseCase,
-      poseService: mockPoseService
+      poseService: mockPoseService,
+      previewService: mockPreviewService
     })
   })
 
@@ -129,5 +139,31 @@ describe('WorkoutService', () => {
     } finally {
       vi.useRealTimers()
     }
+  })
+
+  it('stops preview when starting workout for seamless transition', async () => {
+    const mockVideo = {} as HTMLVideoElement
+    const mockCanvas = {} as HTMLCanvasElement
+    
+    // Mock preview as active
+    mockPreviewService.isPreviewActive.mockReturnValue(true)
+    
+    await workoutService.startWorkout(mockVideo, mockCanvas)
+    
+    expect(mockPreviewService.stopPreviewOnly).toHaveBeenCalled()
+    expect(mockPoseService.startPoseDetection).toHaveBeenCalledWith(mockVideo, mockCanvas)
+  })
+
+  it('does not stop preview when not active during workout start', async () => {
+    const mockVideo = {} as HTMLVideoElement
+    const mockCanvas = {} as HTMLCanvasElement
+    
+    // Mock preview as inactive
+    mockPreviewService.isPreviewActive.mockReturnValue(false)
+    
+    await workoutService.startWorkout(mockVideo, mockCanvas)
+    
+    expect(mockPreviewService.stopPreviewOnly).not.toHaveBeenCalled()
+    expect(mockPoseService.startPoseDetection).toHaveBeenCalledWith(mockVideo, mockCanvas)
   })
 })

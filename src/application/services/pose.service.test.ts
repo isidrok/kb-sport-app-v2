@@ -99,4 +99,16 @@ describe('PoseService', () => {
     await expect(poseService.startPoseDetection(mockVideoElement, mockCanvasElement)).rejects.toThrow('Camera access denied')
     expect(poseService.isActive()).toBe(false)
   })
+
+  it('does not start camera again when already active for seamless transitions', async () => {
+    // First call should start camera
+    await poseService.startPoseDetection(mockVideoElement, mockCanvasElement)
+    expect(mockStartCameraUseCase.execute).toHaveBeenCalledTimes(1)
+    expect(poseService.isActive()).toBe(true)
+
+    // Second call should not start camera again
+    await poseService.startPoseDetection(mockVideoElement, mockCanvasElement)
+    expect(mockStartCameraUseCase.execute).toHaveBeenCalledTimes(1) // Still only called once
+    expect(poseService.isActive()).toBe(true)
+  })
 })

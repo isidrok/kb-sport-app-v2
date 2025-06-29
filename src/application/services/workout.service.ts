@@ -3,12 +3,14 @@ import { startWorkoutUseCase, type StartWorkoutUseCase } from '@/application/use
 import { stopWorkoutUseCase, type StopWorkoutUseCase } from '@/application/use-cases/stop-workout-use-case'
 import { getWorkoutStatusUseCase, type GetWorkoutStatusUseCase, type WorkoutStats } from '@/application/use-cases/get-workout-status-use-case'
 import { poseService, type PoseService } from './pose.service'
+import { previewService, type PreviewService } from './preview.service'
 
 interface WorkoutServiceDependencies {
   startWorkoutUseCase: StartWorkoutUseCase
   stopWorkoutUseCase: StopWorkoutUseCase
   getWorkoutStatusUseCase: GetWorkoutStatusUseCase
   poseService: PoseService
+  previewService: PreviewService
 }
 
 /**
@@ -29,12 +31,14 @@ export class WorkoutService {
   private stopWorkoutUseCase: StopWorkoutUseCase
   private getWorkoutStatusUseCase: GetWorkoutStatusUseCase
   private poseService: PoseService
+  private previewService: PreviewService
 
   constructor(dependencies: WorkoutServiceDependencies) {
     this.startWorkoutUseCase = dependencies.startWorkoutUseCase
     this.stopWorkoutUseCase = dependencies.stopWorkoutUseCase
     this.getWorkoutStatusUseCase = dependencies.getWorkoutStatusUseCase
     this.poseService = dependencies.poseService
+    this.previewService = dependencies.previewService
   }
 
   createWorkout(): WorkoutEntity {
@@ -47,6 +51,11 @@ export class WorkoutService {
   }
 
   async startWorkout(videoElement: HTMLVideoElement, canvasElement: HTMLCanvasElement): Promise<void> {
+    // Stop preview if it's running but keep camera for seamless transition
+    if (this.previewService.isPreviewActive()) {
+      this.previewService.stopPreviewOnly()
+    }
+
     // Always create a new workout when starting
     this.createWorkout()
 
@@ -78,5 +87,6 @@ export const workoutService = new WorkoutService({
   startWorkoutUseCase,
   stopWorkoutUseCase,
   getWorkoutStatusUseCase,
-  poseService
+  poseService,
+  previewService
 })

@@ -44,7 +44,11 @@ export class PoseService {
     canvasElement.width = canvasRect.width
     canvasElement.height = canvasRect.height
 
-    await this.startCameraUseCase.execute(videoElement)
+    // Only start camera if not already active (for seamless preview->workout transition)
+    if (!this._isActive) {
+      await this.startCameraUseCase.execute(videoElement)
+    }
+    
     this._isActive = true
   }
 

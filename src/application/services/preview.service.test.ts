@@ -84,4 +84,21 @@ describe('PreviewService', () => {
     await expect(previewService.startPreview(mockVideoElement, mockCanvasElement)).rejects.toThrow('Camera access denied')
     expect(previewService.isPreviewActive()).toBe(false)
   })
+
+  it('stops preview only without stopping pose detection', async () => {
+    // Start preview first
+    await previewService.startPreview(mockVideoElement, mockCanvasElement)
+    expect(previewService.isPreviewActive()).toBe(true)
+
+    // Stop preview only (for seamless transition)
+    previewService.stopPreviewOnly()
+
+    expect(previewService.isPreviewActive()).toBe(false)
+    expect(mockPoseService.stopPoseDetection).not.toHaveBeenCalled()
+    expect(mockEventBus.publish).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ timestamp: expect.any(String) })
+      })
+    )
+  })
 })

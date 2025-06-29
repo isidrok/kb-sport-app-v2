@@ -52,6 +52,15 @@ export class PreviewService {
     this.eventBus.publish(event)
   }
 
+  stopPreviewOnly(): void {
+    this._isPreviewActive = false
+    
+    const event = new PreviewStoppedEvent({
+      timestamp: new Date().toISOString()
+    })
+    this.eventBus.publish(event)
+  }
+
   isPreviewActive(): boolean {
     return this._isPreviewActive
   }
