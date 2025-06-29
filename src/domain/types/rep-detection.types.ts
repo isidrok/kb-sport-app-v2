@@ -6,5 +6,10 @@
 export interface Prediction {
   box: [number, number, number, number]; // Bounding box coordinates [x1, y1, x2, y2]
   score: number; // Overall prediction confidence score
-  keypoints: [number, number, number][]; // Array of [x, y, confidence] for each detected keypoint
+  keypoints: [number, number, number][]; // Array of [x, y, confidence] for each detected key point
+}
+
+export type Rep = {
+  hand: 'left' | 'right' | 'both'
+  timestamp: Date
 }

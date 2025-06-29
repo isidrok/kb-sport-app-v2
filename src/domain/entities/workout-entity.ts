@@ -1,3 +1,5 @@
+import { type Rep } from '../types/rep-detection.types'
+
 export enum WorkoutStatus {
   IDLE = 'idle',
   ACTIVE = 'active',
@@ -22,6 +24,7 @@ export class WorkoutEntity {
   private _status: WorkoutStatus = WorkoutStatus.IDLE
   private _startTime: Date | null = null
   private _endTime: Date | null = null
+  private _reps: Rep[] = []
 
   constructor(private _id: string) {}
 
@@ -39,6 +42,18 @@ export class WorkoutEntity {
 
   get endTime(): Date | null {
     return this._endTime
+  }
+
+  get reps(): Rep[] {
+    return this._reps
+  }
+
+  getRepCount(): number {
+    return this._reps.length
+  }
+
+  addRep(rep: Rep): void {
+    this._reps.push(rep)
   }
 
   start(): void {
