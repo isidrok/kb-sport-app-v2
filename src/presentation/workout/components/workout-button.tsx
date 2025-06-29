@@ -1,3 +1,5 @@
+import styles from './workout-controls.module.css'
+
 export interface WorkoutButtonProps {
   canStart: boolean
   canStop: boolean
@@ -8,7 +10,7 @@ export interface WorkoutButtonProps {
 
 export function WorkoutButton(props: WorkoutButtonProps) {
   const buttonText = props.canStart ? 'Start' : 'Stop'
-  const buttonStyle = props.canStop ? { backgroundColor: 'red' } : {}
+  const buttonClass = props.canStop ? styles.activeButton : ''
   
   const handleClick = () => {
     if (props.canStart) {
@@ -20,7 +22,7 @@ export function WorkoutButton(props: WorkoutButtonProps) {
   
   return (
     <button 
-      style={buttonStyle} 
+      className={buttonClass}
       disabled={props.isStarting} 
       onClick={handleClick}
     >

@@ -1,3 +1,5 @@
+import styles from '../workout/components/workout-controls.module.css'
+
 export interface PreviewButtonProps {
   isPreviewActive: boolean
   isDisabled: boolean
@@ -7,7 +9,7 @@ export interface PreviewButtonProps {
 
 export function PreviewButton(props: PreviewButtonProps) {
   const buttonText = props.isPreviewActive ? 'Stop Preview' : 'Start Preview'
-  const buttonStyle = props.isPreviewActive ? { backgroundColor: 'red' } : {}
+  const buttonClass = props.isPreviewActive ? styles.activeButton : ''
   
   const handleClick = () => {
     if (props.isPreviewActive) {
@@ -18,7 +20,7 @@ export function PreviewButton(props: PreviewButtonProps) {
   }
   
   return (
-    <button style={buttonStyle} onClick={handleClick} disabled={props.isDisabled}>
+    <button className={buttonClass} onClick={handleClick} disabled={props.isDisabled}>
       {buttonText}
     </button>
   )
