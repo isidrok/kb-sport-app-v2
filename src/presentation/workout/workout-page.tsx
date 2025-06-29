@@ -1,10 +1,10 @@
-import { useRef, useEffect } from "preact/hooks";
+import { useRef } from "preact/hooks";
 import styles from "./workout-page.module.css";
 import { WorkoutControls } from "./components/workout-controls";
+import { WorkoutStats } from "./components/workout-stats";
 import { StatusPopup } from "../components/status-popup";
 import { useModelLoading } from "../hooks/use-model-loading";
 import { useFrameProcessing } from "./hooks/use-frame-processing";
-import { loadModelUseCase } from "@/application/use-cases/load-model-use-case";
 
 /**
  * Main workout page with camera feed, pose detection, and real-time statistics.
@@ -14,12 +14,6 @@ export function WorkoutPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { status, message } = useModelLoading();
-
-  useEffect(() => {
-    loadModelUseCase.execute().catch(() => {
-      // Error is handled by the use case and published as event
-    });
-  }, []);
 
   useFrameProcessing(videoRef, canvasRef);
 
@@ -39,6 +33,8 @@ export function WorkoutPage() {
       </div>
       
       <WorkoutControls videoRef={videoRef} canvasRef={canvasRef} />
+      
+      <WorkoutStats />
       
       <StatusPopup 
         visible={showStatusPopup}

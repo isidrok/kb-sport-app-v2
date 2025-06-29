@@ -19,7 +19,10 @@ export function useFrameProcessing(
 
     const processFrame = () => {
       if (videoRef.current && canvasRef.current && shouldProcess) {
-        poseService.processFrame(videoRef.current, canvasRef.current)
+        // Only process if video has a valid stream
+        if (videoRef.current.srcObject && videoRef.current.readyState >= 2) {
+          poseService.processFrame(videoRef.current, canvasRef.current)
+        }
       }
       animationFrameRef.current = requestAnimationFrame(processFrame)
     }

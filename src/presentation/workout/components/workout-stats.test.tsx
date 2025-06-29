@@ -22,21 +22,21 @@ describe('WorkoutStats', () => {
   })
 
   it('renders rep count card', () => {
-    render(<WorkoutStats workoutId="test-workout" />)
+    render(<WorkoutStats />)
     
     expect(screen.getByText('5')).toBeInTheDocument()
     expect(screen.getByText('Reps')).toBeInTheDocument()
   })
 
   it('uses existing workout state hook', () => {
-    render(<WorkoutStats workoutId="workout-123" />)
+    render(<WorkoutStats />)
     
     expect(mockUseWorkoutState).toHaveBeenCalled()
   })
 
   it('updates on workout status event', () => {
     // First render with 5 reps
-    const { rerender } = render(<WorkoutStats workoutId="test-workout" />)
+    const { rerender } = render(<WorkoutStats />)
     expect(screen.getByText('5')).toBeInTheDocument()
 
     // Simulate event-triggered state update with new rep count
@@ -50,7 +50,7 @@ describe('WorkoutStats', () => {
     })
 
     // Re-render to simulate hook state update
-    rerender(<WorkoutStats workoutId="test-workout" />)
+    rerender(<WorkoutStats />)
     expect(screen.getByText('8')).toBeInTheDocument()
   })
 })

@@ -1,4 +1,4 @@
-import styles from '../workout/components/workout-controls.module.css'
+import styles from './workout-controls.module.css'
 
 export interface PreviewButtonProps {
   isPreviewActive: boolean

@@ -3,7 +3,7 @@ import { useWorkoutState } from '../hooks/use-workout-state'
 import { useWorkoutActions } from '../hooks/use-workout-actions'
 import { usePreview } from '../../hooks/use-preview'
 import { WorkoutButton } from './workout-button'
-import { PreviewButton } from '../../components/preview-button'
+import { PreviewButton } from './preview-button'
 import styles from './workout-controls.module.css'
 
 interface WorkoutControlsProps {
