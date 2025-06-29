@@ -1,50 +1,40 @@
 import { WorkoutEntity } from '@/domain/entities/workout-entity'
-import { startCameraUseCase, type StartCameraUseCase } from '@/application/use-cases/start-camera-use-case'
-import { stopCameraUseCase, type StopCameraUseCase } from '@/application/use-cases/stop-camera-use-case'
 import { startWorkoutUseCase, type StartWorkoutUseCase } from '@/application/use-cases/start-workout-use-case'
 import { stopWorkoutUseCase, type StopWorkoutUseCase } from '@/application/use-cases/stop-workout-use-case'
-import { processFrameUseCase, type ProcessFrameUseCase } from '@/application/use-cases/process-frame-use-case'
 import { getWorkoutStatusUseCase, type GetWorkoutStatusUseCase, type WorkoutStats } from '@/application/use-cases/get-workout-status-use-case'
+import { poseService, type PoseService } from './pose.service'
 
 interface WorkoutServiceDependencies {
-  startCameraUseCase: StartCameraUseCase
-  stopCameraUseCase: StopCameraUseCase
   startWorkoutUseCase: StartWorkoutUseCase
   stopWorkoutUseCase: StopWorkoutUseCase
-  processFrameUseCase: ProcessFrameUseCase
   getWorkoutStatusUseCase: GetWorkoutStatusUseCase
+  poseService: PoseService
 }
 
 /**
  * Application service that coordinates workout management use cases.
  * 
  * This service maintains a workout instance and orchestrates the interaction
- * between camera operations, workout lifecycle management, and frame processing
- * for pose detection.
+ * between pose detection (via PoseService) and workout lifecycle management.
  * 
  * Key responsibilities:
  * - Managing workout lifecycle (create, start, stop)
- * - Coordinating camera operations with workout state
- * - Setting video/canvas dimensions before camera initialization
- * - Delegating frame processing to ML use cases
+ * - Delegating pose detection operations to PoseService
+ * - Coordinating workout state with pose detection
  * - Providing workout status queries for UI
  */
 export class WorkoutService {
   private _currentWorkout: WorkoutEntity | null = null
-  private startCameraUseCase: StartCameraUseCase
-  private stopCameraUseCase: StopCameraUseCase
   private startWorkoutUseCase: StartWorkoutUseCase
   private stopWorkoutUseCase: StopWorkoutUseCase
-  private processFrameUseCase: ProcessFrameUseCase
   private getWorkoutStatusUseCase: GetWorkoutStatusUseCase
+  private poseService: PoseService
 
   constructor(dependencies: WorkoutServiceDependencies) {
-    this.startCameraUseCase = dependencies.startCameraUseCase
-    this.stopCameraUseCase = dependencies.stopCameraUseCase
     this.startWorkoutUseCase = dependencies.startWorkoutUseCase
     this.stopWorkoutUseCase = dependencies.stopWorkoutUseCase
-    this.processFrameUseCase = dependencies.processFrameUseCase
     this.getWorkoutStatusUseCase = dependencies.getWorkoutStatusUseCase
+    this.poseService = dependencies.poseService
   }
 
   createWorkout(): WorkoutEntity {
@@ -60,31 +50,19 @@ export class WorkoutService {
     // Always create a new workout when starting
     this.createWorkout()
 
-    this.setElementDimensions(videoElement, canvasElement)
-
-    await this.startCameraUseCase.execute(videoElement)
+    await this.poseService.startPoseDetection(videoElement, canvasElement)
     this.startWorkoutUseCase.execute(this._currentWorkout!)
-  }
-
-  private setElementDimensions(videoElement: HTMLVideoElement, canvasElement: HTMLCanvasElement): void {
-    const videoRect = videoElement.getBoundingClientRect()
-    const canvasRect = canvasElement.getBoundingClientRect()
-    
-    videoElement.width = videoRect.width
-    videoElement.height = videoRect.height
-    canvasElement.width = canvasRect.width
-    canvasElement.height = canvasRect.height
   }
 
   stopWorkout(canvasElement?: HTMLCanvasElement): void {
     if (!this._currentWorkout) return
     
-    this.stopCameraUseCase.execute()
+    this.poseService.stopPoseDetection(canvasElement)
     this.stopWorkoutUseCase.execute(this._currentWorkout, canvasElement)
   }
 
   processFrame(videoElement: HTMLVideoElement, canvasElement: HTMLCanvasElement): void {
-    this.processFrameUseCase.execute(videoElement, canvasElement)
+    this.poseService.processFrame(videoElement, canvasElement)
   }
 
   getWorkoutStatus(): WorkoutStats | null {
@@ -97,10 +75,8 @@ export class WorkoutService {
 
 // Singleton export
 export const workoutService = new WorkoutService({
-  startCameraUseCase,
-  stopCameraUseCase,
   startWorkoutUseCase,
   stopWorkoutUseCase,
-  processFrameUseCase,
-  getWorkoutStatusUseCase
+  getWorkoutStatusUseCase,
+  poseService
 })

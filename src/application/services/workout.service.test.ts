@@ -1,37 +1,22 @@
 import { describe, it, expect, vi, beforeEach, Mocked } from 'vitest'
 import { WorkoutService } from './workout.service'
-import { StartCameraUseCase } from '@/application/use-cases/start-camera-use-case'
-import { StopCameraUseCase } from '@/application/use-cases/stop-camera-use-case'
 import { StartWorkoutUseCase } from '@/application/use-cases/start-workout-use-case'
 import { StopWorkoutUseCase } from '@/application/use-cases/stop-workout-use-case'
-import { ProcessFrameUseCase } from '@/application/use-cases/process-frame-use-case'
 import { GetWorkoutStatusUseCase } from '@/application/use-cases/get-workout-status-use-case'
+import type { PoseService } from './pose.service'
 
-vi.mock('@/application/use-cases/start-camera-use-case')
-vi.mock('@/application/use-cases/stop-camera-use-case')
 vi.mock('@/application/use-cases/start-workout-use-case')
 vi.mock('@/application/use-cases/stop-workout-use-case')
-vi.mock('@/application/use-cases/process-frame-use-case')
 vi.mock('@/application/use-cases/get-workout-status-use-case')
 
 describe('WorkoutService', () => {
   let workoutService: WorkoutService
-  let mockStartCameraUseCase: Mocked<StartCameraUseCase>
-  let mockStopCameraUseCase: Mocked<StopCameraUseCase>
   let mockStartWorkoutUseCase: Mocked<StartWorkoutUseCase>
   let mockStopWorkoutUseCase: Mocked<StopWorkoutUseCase>
-  let mockProcessFrameUseCase: Mocked<ProcessFrameUseCase>
   let mockGetWorkoutStatusUseCase: Mocked<GetWorkoutStatusUseCase>
+  let mockPoseService: Mocked<PoseService>
 
   beforeEach(() => {
-    mockStartCameraUseCase = {
-      execute: vi.fn()
-    } as Partial<StartCameraUseCase> as Mocked<StartCameraUseCase>
-    
-    mockStopCameraUseCase = {
-      execute: vi.fn()
-    } as Partial<StopCameraUseCase> as Mocked<StopCameraUseCase>
-    
     mockStartWorkoutUseCase = {
       execute: vi.fn()
     } as Partial<StartWorkoutUseCase> as Mocked<StartWorkoutUseCase>
@@ -40,21 +25,22 @@ describe('WorkoutService', () => {
       execute: vi.fn()
     } as Partial<StopWorkoutUseCase> as Mocked<StopWorkoutUseCase>
     
-    mockProcessFrameUseCase = {
-      execute: vi.fn()
-    } as Partial<ProcessFrameUseCase> as Mocked<ProcessFrameUseCase>
-    
     mockGetWorkoutStatusUseCase = {
       execute: vi.fn()
     } as Partial<GetWorkoutStatusUseCase> as Mocked<GetWorkoutStatusUseCase>
 
+    mockPoseService = {
+      startPoseDetection: vi.fn(),
+      stopPoseDetection: vi.fn(),
+      processFrame: vi.fn(),
+      isActive: vi.fn().mockReturnValue(false)
+    } as Partial<PoseService> as Mocked<PoseService>
+
     workoutService = new WorkoutService({
-      startCameraUseCase: mockStartCameraUseCase,
-      stopCameraUseCase: mockStopCameraUseCase,
       startWorkoutUseCase: mockStartWorkoutUseCase,
       stopWorkoutUseCase: mockStopWorkoutUseCase,
-      processFrameUseCase: mockProcessFrameUseCase,
-      getWorkoutStatusUseCase: mockGetWorkoutStatusUseCase
+      getWorkoutStatusUseCase: mockGetWorkoutStatusUseCase,
+      poseService: mockPoseService
     })
   })
 
@@ -65,64 +51,43 @@ describe('WorkoutService', () => {
     expect(workoutService.currentWorkout).toBe(workout)
   })
 
-  it('sets video canvas dimensions from client rect', async () => {
-    workoutService.createWorkout()
-    
-    const mockVideo = {
-      getBoundingClientRect: vi.fn().mockReturnValue({ width: 640, height: 480 }),
-      width: 0,
-      height: 0
-    } as any
-    const mockCanvas = {
-      getBoundingClientRect: vi.fn().mockReturnValue({ width: 640, height: 480 }),
-      width: 0,
-      height: 0
-    } as any
+  it('delegates pose detection setup to pose service', async () => {
+    const mockVideo = {} as HTMLVideoElement
+    const mockCanvas = {} as HTMLCanvasElement
 
     await workoutService.startWorkout(mockVideo, mockCanvas)
 
-    expect(mockVideo.width).toBe(640)
-    expect(mockVideo.height).toBe(480)
-    expect(mockCanvas.width).toBe(640)
-    expect(mockCanvas.height).toBe(480)
+    expect(mockPoseService.startPoseDetection).toHaveBeenCalledWith(mockVideo, mockCanvas)
   })
 
-  it('start workout calls camera and workout use cases', async () => {
-    const workout = workoutService.createWorkout()
-    
-    const mockVideo = {
-      getBoundingClientRect: vi.fn().mockReturnValue({ width: 640, height: 480 }),
-      width: 0,
-      height: 0
-    } as any
-    const mockCanvas = {
-      getBoundingClientRect: vi.fn().mockReturnValue({ width: 640, height: 480 }),
-      width: 0,
-      height: 0
-    } as any
+  it('starts workout and calls workout use case', async () => {
+    const mockVideo = {} as HTMLVideoElement
+    const mockCanvas = {} as HTMLCanvasElement
 
     await workoutService.startWorkout(mockVideo, mockCanvas)
 
-    expect(mockStartCameraUseCase.execute).toHaveBeenCalledWith(mockVideo)
+    const workout = workoutService.currentWorkout
+    expect(workout).toBeDefined()
     expect(mockStartWorkoutUseCase.execute).toHaveBeenCalledWith(workout)
   })
 
-  it('stop workout calls camera and workout use cases', () => {
+  it('stop workout calls pose service and workout use case', () => {
     const workout = workoutService.createWorkout()
+    const mockCanvas = {} as HTMLCanvasElement
 
-    workoutService.stopWorkout()
+    workoutService.stopWorkout(mockCanvas)
 
-    expect(mockStopCameraUseCase.execute).toHaveBeenCalled()
-    expect(mockStopWorkoutUseCase.execute).toHaveBeenCalledWith(workout, undefined)
+    expect(mockPoseService.stopPoseDetection).toHaveBeenCalledWith(mockCanvas)
+    expect(mockStopWorkoutUseCase.execute).toHaveBeenCalledWith(workout, mockCanvas)
   })
 
-  it('delegates process frame to use case', () => {
+  it('delegates process frame to pose service', () => {
     const mockVideo = {} as HTMLVideoElement
     const mockCanvas = {} as HTMLCanvasElement
 
     workoutService.processFrame(mockVideo, mockCanvas)
 
-    expect(mockProcessFrameUseCase.execute).toHaveBeenCalledWith(mockVideo, mockCanvas)
+    expect(mockPoseService.processFrame).toHaveBeenCalledWith(mockVideo, mockCanvas)
   })
 
   it('returns workout stats', () => {
@@ -139,12 +104,8 @@ describe('WorkoutService', () => {
   it('creates new workout when starting after previous workout stopped', async () => {
     vi.useFakeTimers()
     
-    const mockVideo = {
-      getBoundingClientRect: vi.fn(() => ({ width: 640, height: 480 }))
-    } as any
-    const mockCanvas = {
-      getBoundingClientRect: vi.fn(() => ({ width: 640, height: 480 }))
-    } as any
+    const mockVideo = {} as HTMLVideoElement
+    const mockCanvas = {} as HTMLCanvasElement
     
     try {
       // Start first workout
