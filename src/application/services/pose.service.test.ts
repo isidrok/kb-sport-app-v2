@@ -3,12 +3,14 @@ import { PoseService } from './pose.service'
 import type { StartCameraUseCase } from '@/application/use-cases/start-camera-use-case'
 import type { StopCameraUseCase } from '@/application/use-cases/stop-camera-use-case'
 import type { ProcessFrameUseCase } from '@/application/use-cases/process-frame-use-case'
+import type { PredictionRendererAdapter } from '@/infrastructure/adapters/prediction-renderer.adapter'
 
 describe('PoseService', () => {
   let poseService: PoseService
   let mockStartCameraUseCase: Mocked<StartCameraUseCase>
   let mockStopCameraUseCase: Mocked<StopCameraUseCase>
   let mockProcessFrameUseCase: Mocked<ProcessFrameUseCase>
+  let mockRendererAdapter: Mocked<PredictionRendererAdapter>
   let mockVideoElement: HTMLVideoElement
   let mockCanvasElement: HTMLCanvasElement
 
@@ -25,10 +27,15 @@ describe('PoseService', () => {
       execute: vi.fn()
     } as Partial<ProcessFrameUseCase> as Mocked<ProcessFrameUseCase>
 
+    mockRendererAdapter = {
+      clear: vi.fn()
+    } as Partial<PredictionRendererAdapter> as Mocked<PredictionRendererAdapter>
+
     poseService = new PoseService({
       startCameraUseCase: mockStartCameraUseCase,
       stopCameraUseCase: mockStopCameraUseCase,
-      processFrameUseCase: mockProcessFrameUseCase
+      processFrameUseCase: mockProcessFrameUseCase,
+      rendererAdapter: mockRendererAdapter
     })
 
     mockVideoElement = {
@@ -66,8 +73,7 @@ describe('PoseService', () => {
     poseService.stopPoseDetection(mockCanvasElement)
 
     expect(mockStopCameraUseCase.execute).toHaveBeenCalled()
-    const context = mockCanvasElement.getContext('2d')
-    expect(context?.clearRect).toHaveBeenCalledWith(0, 0, mockCanvasElement.width, mockCanvasElement.height)
+    expect(mockRendererAdapter.clear).toHaveBeenCalledWith(mockCanvasElement)
   })
 
   it('delegates frame processing', () => {

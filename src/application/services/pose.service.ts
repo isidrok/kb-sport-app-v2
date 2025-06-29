@@ -1,11 +1,13 @@
 import { startCameraUseCase, type StartCameraUseCase } from '@/application/use-cases/start-camera-use-case'
 import { stopCameraUseCase, type StopCameraUseCase } from '@/application/use-cases/stop-camera-use-case'
 import { processFrameUseCase, type ProcessFrameUseCase } from '@/application/use-cases/process-frame-use-case'
+import { predictionRendererAdapter, type PredictionRendererAdapter } from '@/infrastructure/adapters/prediction-renderer.adapter'
 
 interface PoseServiceDependencies {
   startCameraUseCase: StartCameraUseCase
   stopCameraUseCase: StopCameraUseCase
   processFrameUseCase: ProcessFrameUseCase
+  rendererAdapter: PredictionRendererAdapter
 }
 
 /**
@@ -23,12 +25,14 @@ export class PoseService {
   private startCameraUseCase: StartCameraUseCase
   private stopCameraUseCase: StopCameraUseCase
   private processFrameUseCase: ProcessFrameUseCase
+  private rendererAdapter: PredictionRendererAdapter
   private _isActive: boolean = false
 
   constructor(dependencies: PoseServiceDependencies) {
     this.startCameraUseCase = dependencies.startCameraUseCase
     this.stopCameraUseCase = dependencies.stopCameraUseCase
     this.processFrameUseCase = dependencies.processFrameUseCase
+    this.rendererAdapter = dependencies.rendererAdapter
   }
 
   async startPoseDetection(videoElement: HTMLVideoElement, canvasElement: HTMLCanvasElement): Promise<void> {
@@ -49,10 +53,7 @@ export class PoseService {
     this._isActive = false
     
     if (canvasElement) {
-      const context = canvasElement.getContext('2d')
-      if (context) {
-        context.clearRect(0, 0, canvasElement.width, canvasElement.height)
-      }
+      this.rendererAdapter.clear(canvasElement)
     }
   }
 
@@ -69,5 +70,6 @@ export class PoseService {
 export const poseService = new PoseService({
   startCameraUseCase: startCameraUseCase,
   stopCameraUseCase: stopCameraUseCase,
-  processFrameUseCase: processFrameUseCase
+  processFrameUseCase: processFrameUseCase,
+  rendererAdapter: predictionRendererAdapter
 })
