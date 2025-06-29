@@ -36,8 +36,7 @@ describe('WorkoutControls', () => {
   it('renders both buttons', () => {
     vi.mocked(useWorkoutState).mockReturnValue({
       status: WorkoutStatus.IDLE,
-      canStart: true,
-      canStop: false,
+      isActive: false,
       startTime: null,
       endTime: null,
       repCount: 0
@@ -52,8 +51,7 @@ describe('WorkoutControls', () => {
   it('shows stop when active', () => {
     vi.mocked(useWorkoutState).mockReturnValue({
       status: WorkoutStatus.ACTIVE,
-      canStart: false,
-      canStop: true,
+      isActive: true,
       startTime: new Date(),
       endTime: null,
       repCount: 0
@@ -67,8 +65,7 @@ describe('WorkoutControls', () => {
   it('disabled when starting', () => {
     vi.mocked(useWorkoutState).mockReturnValue({
       status: WorkoutStatus.IDLE,
-      canStart: true,
-      canStop: false,
+      isActive: false,
       startTime: null,
       endTime: null,
       repCount: 0
@@ -97,8 +94,7 @@ describe('WorkoutControls', () => {
 
     vi.mocked(useWorkoutState).mockReturnValue({
       status: WorkoutStatus.IDLE,
-      canStart: true,
-      canStop: false,
+      isActive: false,
       startTime: null,
       endTime: null,
       repCount: 0
@@ -124,8 +120,7 @@ describe('WorkoutControls', () => {
 
     vi.mocked(useWorkoutState).mockReturnValue({
       status: WorkoutStatus.ACTIVE,
-      canStart: false,
-      canStop: true,
+      isActive: true,
       startTime: new Date(),
       endTime: null,
       repCount: 0
@@ -149,8 +144,7 @@ describe('WorkoutControls', () => {
   it('disables preview when workout active', () => {
     vi.mocked(useWorkoutState).mockReturnValue({
       status: WorkoutStatus.ACTIVE,
-      canStart: false,
-      canStop: true,
+      isActive: true,
       startTime: new Date(),
       endTime: null,
       repCount: 0

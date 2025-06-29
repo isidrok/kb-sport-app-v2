@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach, Mocked } from 'vitest'
 import { WorkoutService } from './workout.service'
 import { StartWorkoutUseCase } from '@/application/use-cases/start-workout-use-case'
 import { StopWorkoutUseCase } from '@/application/use-cases/stop-workout-use-case'
-import { GetWorkoutStatusUseCase } from '@/application/use-cases/get-workout-status-use-case'
 import { DetectRepUseCase } from '@/application/use-cases/detect-rep-use-case'
 import type { PoseService } from './pose.service'
 import type { PreviewService } from './preview.service'
@@ -10,14 +9,12 @@ import { type Prediction } from '@/domain/types/rep-detection.types'
 
 vi.mock('@/application/use-cases/start-workout-use-case')
 vi.mock('@/application/use-cases/stop-workout-use-case')
-vi.mock('@/application/use-cases/get-workout-status-use-case')
 vi.mock('@/application/use-cases/detect-rep-use-case')
 
 describe('WorkoutService', () => {
   let workoutService: WorkoutService
   let mockStartWorkoutUseCase: Mocked<StartWorkoutUseCase>
   let mockStopWorkoutUseCase: Mocked<StopWorkoutUseCase>
-  let mockGetWorkoutStatusUseCase: Mocked<GetWorkoutStatusUseCase>
   let mockDetectRepUseCase: Mocked<DetectRepUseCase>
   let mockPoseService: Mocked<PoseService>
   let mockPreviewService: Mocked<PreviewService>
@@ -31,9 +28,6 @@ describe('WorkoutService', () => {
       execute: vi.fn()
     } as Partial<StopWorkoutUseCase> as Mocked<StopWorkoutUseCase>
     
-    mockGetWorkoutStatusUseCase = {
-      execute: vi.fn()
-    } as Partial<GetWorkoutStatusUseCase> as Mocked<GetWorkoutStatusUseCase>
 
     mockDetectRepUseCase = {
       execute: vi.fn()
@@ -56,7 +50,6 @@ describe('WorkoutService', () => {
     workoutService = new WorkoutService({
       startWorkoutUseCase: mockStartWorkoutUseCase,
       stopWorkoutUseCase: mockStopWorkoutUseCase,
-      getWorkoutStatusUseCase: mockGetWorkoutStatusUseCase,
       detectRepUseCase: mockDetectRepUseCase,
       poseService: mockPoseService,
       previewService: mockPreviewService
@@ -109,15 +102,18 @@ describe('WorkoutService', () => {
     expect(mockPoseService.processFrame).toHaveBeenCalledWith(mockVideo, mockCanvas)
   })
 
-  it('returns workout stats', () => {
-    const workout = workoutService.createWorkout()
-    const mockStats = { status: 'idle', canStart: true, canStop: false } as any
-    mockGetWorkoutStatusUseCase.execute.mockReturnValue(mockStats)
+  it('returns workout stats from domain entity', () => {
+    workoutService.createWorkout()
 
     const result = workoutService.getWorkoutStatus()
 
-    expect(mockGetWorkoutStatusUseCase.execute).toHaveBeenCalledWith(workout)
-    expect(result).toBe(mockStats)
+    expect(result).toEqual({
+      status: 'idle',
+      startTime: null,
+      endTime: null,
+      isActive: false,
+      repCount: 0
+    })
   })
 
   it('creates new workout when starting after previous workout stopped', async () => {

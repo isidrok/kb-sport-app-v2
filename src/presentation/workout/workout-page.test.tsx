@@ -27,8 +27,7 @@ describe('WorkoutPage', () => {
       status: WorkoutStatus.ACTIVE,
       startTime: new Date(),
       endTime: null,
-      canStart: false,
-      canStop: true,
+      isActive: true,
       repCount: 3
     })
   })

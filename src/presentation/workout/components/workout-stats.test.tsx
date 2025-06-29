@@ -15,8 +15,7 @@ describe('WorkoutStats', () => {
       status: WorkoutStatus.ACTIVE,
       startTime: new Date(),
       endTime: null,
-      canStart: false,
-      canStop: true,
+      isActive: true,
       repCount: 5
     })
   })
@@ -44,8 +43,7 @@ describe('WorkoutStats', () => {
       status: WorkoutStatus.ACTIVE,
       startTime: new Date(),
       endTime: null,
-      canStart: false,
-      canStop: true,
+      isActive: true,
       repCount: 8
     })
 

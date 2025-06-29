@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, act } from '@testing-library/preact'
 import { useWorkoutState } from './use-workout-state'
 import { workoutService } from '@/application/services/workout.service'
-import { WorkoutStatusEvent } from '@/domain/events/workout-status-event'
 import { WorkoutStatus } from '@/domain/entities/workout-entity'
 
 const mockSubscribe = vi.fn()
@@ -29,8 +28,7 @@ describe('useWorkoutState', () => {
   it('returns current workout stats', () => {
     const mockStats = {
       status: WorkoutStatus.IDLE,
-      canStart: true,
-      canStop: false,
+      isActive: false,
       startTime: null,
       endTime: null,
       repCount: 0
@@ -46,12 +44,11 @@ describe('useWorkoutState', () => {
   })
 
   it('updates on workout events', () => {
-    let mockListener: (event: WorkoutStatusEvent) => void = vi.fn()
+    let mockListener: (event: any) => void = vi.fn()
     
     const initialStats = {
       status: WorkoutStatus.IDLE,
-      canStart: true,
-      canStop: false,
+      isActive: false,
       startTime: null,
       endTime: null,
       repCount: 0
@@ -59,8 +56,7 @@ describe('useWorkoutState', () => {
     
     const updatedStats = {
       status: WorkoutStatus.ACTIVE,
-      canStart: false,
-      canStop: true,
+      isActive: true,
       startTime: new Date(),
       endTime: null,
       repCount: 0
@@ -80,17 +76,19 @@ describe('useWorkoutState', () => {
     expect(result.current.status).toBe(WorkoutStatus.IDLE)
 
     // Simulate workout status event
-    const statusEvent = new WorkoutStatusEvent({ 
-      workoutId: 'workout_123', 
-      status: WorkoutStatus.ACTIVE 
-    })
+    const statusEvent = { 
+      data: {
+        workoutId: 'workout_123', 
+        stats: updatedStats
+      }
+    }
     
     act(() => {
       mockListener(statusEvent)
     })
 
     expect(result.current.status).toBe(WorkoutStatus.ACTIVE)
-    expect(workoutService.getWorkoutStatus).toHaveBeenCalledTimes(2)
+    expect(workoutService.getWorkoutStatus).toHaveBeenCalledTimes(1) // Only called once during initialization
   })
 
   it('cleans up listeners', () => {

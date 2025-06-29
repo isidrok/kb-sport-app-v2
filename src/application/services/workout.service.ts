@@ -1,7 +1,6 @@
-import { WorkoutEntity } from '@/domain/entities/workout-entity'
+import { WorkoutEntity, type WorkoutStats } from '@/domain/entities/workout-entity'
 import { startWorkoutUseCase, type StartWorkoutUseCase } from '@/application/use-cases/start-workout-use-case'
 import { stopWorkoutUseCase, type StopWorkoutUseCase } from '@/application/use-cases/stop-workout-use-case'
-import { getWorkoutStatusUseCase, type GetWorkoutStatusUseCase, type WorkoutStats } from '@/application/use-cases/get-workout-status-use-case'
 import { detectRepUseCase, type DetectRepUseCase } from '@/application/use-cases/detect-rep-use-case'
 import { poseService, type PoseService } from './pose.service'
 import { previewService, type PreviewService } from './preview.service'
@@ -9,7 +8,6 @@ import { previewService, type PreviewService } from './preview.service'
 interface WorkoutServiceDependencies {
   startWorkoutUseCase: StartWorkoutUseCase
   stopWorkoutUseCase: StopWorkoutUseCase
-  getWorkoutStatusUseCase: GetWorkoutStatusUseCase
   detectRepUseCase: DetectRepUseCase
   poseService: PoseService
   previewService: PreviewService
@@ -31,7 +29,6 @@ export class WorkoutService {
   private _currentWorkout: WorkoutEntity | null = null
   private startWorkoutUseCase: StartWorkoutUseCase
   private stopWorkoutUseCase: StopWorkoutUseCase
-  private getWorkoutStatusUseCase: GetWorkoutStatusUseCase
   private detectRepUseCase: DetectRepUseCase
   private poseService: PoseService
   private previewService: PreviewService
@@ -39,7 +36,6 @@ export class WorkoutService {
   constructor(dependencies: WorkoutServiceDependencies) {
     this.startWorkoutUseCase = dependencies.startWorkoutUseCase
     this.stopWorkoutUseCase = dependencies.stopWorkoutUseCase
-    this.getWorkoutStatusUseCase = dependencies.getWorkoutStatusUseCase
     this.detectRepUseCase = dependencies.detectRepUseCase
     this.poseService = dependencies.poseService
     this.previewService = dependencies.previewService
@@ -96,7 +92,7 @@ export class WorkoutService {
     if (!this._currentWorkout) {
       return null
     }
-    return this.getWorkoutStatusUseCase.execute(this._currentWorkout)
+    return this._currentWorkout.getStats()
   }
 }
 
@@ -104,7 +100,6 @@ export class WorkoutService {
 export const workoutService = new WorkoutService({
   startWorkoutUseCase,
   stopWorkoutUseCase,
-  getWorkoutStatusUseCase,
   detectRepUseCase,
   poseService,
   previewService

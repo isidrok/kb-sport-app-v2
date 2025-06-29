@@ -12,9 +12,12 @@ interface WorkoutControlsProps {
 }
 
 export function WorkoutControls({ videoRef, canvasRef }: WorkoutControlsProps) {
-  const { canStart, canStop } = useWorkoutState()
+  const stats = useWorkoutState()
   const { startWorkout, stopWorkout, isStarting } = useWorkoutActions()
   const { isPreviewActive, startPreview, stopPreview } = usePreview(videoRef, canvasRef)
+  
+  const canStart = !stats.isActive
+  const canStop = stats.isActive
 
   const handleStartWorkout = async () => {
     if (videoRef.current && canvasRef.current) {

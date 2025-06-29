@@ -1,7 +1,6 @@
 import { repDetectionService, type RepDetectionService } from '@/domain/services/rep-detection.service'
 import { eventBus, type EventBus } from '@/infrastructure/event-bus/event-bus'
 import { WorkoutEntity } from '@/domain/entities/workout-entity'
-import { WorkoutStatusEvent } from '@/domain/events/workout-status-event'
 import { type Prediction } from '@/domain/types/rep-detection.types'
 
 interface DetectRepUseCaseDependencies {
@@ -26,12 +25,8 @@ export class DetectRepUseCase {
     const rep = this.dependencies.repDetectionService.detectRep(params.prediction)
     
     if (rep) {
-      params.workout.addRep(rep)
-      
-      this.dependencies.eventBus.publish(new WorkoutStatusEvent({
-        workoutId: params.workout.id,
-        status: params.workout.status
-      }))
+      const event = params.workout.addRep(rep)
+      this.dependencies.eventBus.publish(event)
       
       return {
         repDetected: true,

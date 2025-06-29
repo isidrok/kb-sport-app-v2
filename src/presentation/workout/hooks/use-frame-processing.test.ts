@@ -75,8 +75,7 @@ describe('useFrameProcessing', () => {
   it('starts frame processing when workout is active', () => {
     mockUseWorkoutState.mockReturnValue({
       status: WorkoutStatus.ACTIVE,
-      canStart: false,
-      canStop: true,
+      isActive: true,
       startTime: new Date(),
       endTime: null,
       repCount: 0
@@ -90,8 +89,7 @@ describe('useFrameProcessing', () => {
   it('does not start frame processing when workout is idle', () => {
     mockUseWorkoutState.mockReturnValue({
       status: WorkoutStatus.IDLE,
-      canStart: true,
-      canStop: false,
+      isActive: false,
       startTime: null,
       endTime: null,
       repCount: 0
@@ -105,8 +103,7 @@ describe('useFrameProcessing', () => {
   it('calls workoutService.processFrame when elements exist and workout is active', () => {
     mockUseWorkoutState.mockReturnValue({
       status: WorkoutStatus.ACTIVE,
-      canStart: false,
-      canStop: true,
+      isActive: true,
       startTime: new Date(),
       endTime: null,
       repCount: 0
@@ -136,8 +133,7 @@ describe('useFrameProcessing', () => {
     // Start with active workout
     mockUseWorkoutState.mockReturnValue({
       status: WorkoutStatus.ACTIVE,
-      canStart: false,
-      canStop: true,
+      isActive: true,
       startTime: new Date(),
       endTime: null,
       repCount: 0
@@ -151,8 +147,7 @@ describe('useFrameProcessing', () => {
     // Change workout status to stopped
     mockUseWorkoutState.mockReturnValue({
       status: WorkoutStatus.STOPPED,
-      canStart: true,
-      canStop: false,
+      isActive: false,
       startTime: new Date(),
       endTime: new Date(),
       repCount: 0
@@ -167,8 +162,7 @@ describe('useFrameProcessing', () => {
   it('cancels animation frame on cleanup', () => {
     mockUseWorkoutState.mockReturnValue({
       status: WorkoutStatus.ACTIVE,
-      canStart: false,
-      canStop: true,
+      isActive: true,
       startTime: new Date(),
       endTime: null,
       repCount: 0
@@ -184,8 +178,7 @@ describe('useFrameProcessing', () => {
   it('processes frames during preview mode', () => {
     mockUseWorkoutState.mockReturnValue({
       status: WorkoutStatus.IDLE,
-      canStart: true,
-      canStop: false,
+      isActive: false,
       startTime: null,
       endTime: null,
       repCount: 0
@@ -206,8 +199,7 @@ describe('useFrameProcessing', () => {
   it('calls previewService.processFrame during preview', () => {
     mockUseWorkoutState.mockReturnValue({
       status: WorkoutStatus.IDLE,
-      canStart: true,
-      canStop: false,
+      isActive: false,
       startTime: null,
       endTime: null,
       repCount: 0
@@ -244,8 +236,7 @@ describe('useFrameProcessing', () => {
     // Start with preview active
     mockUseWorkoutState.mockReturnValue({
       status: WorkoutStatus.IDLE,
-      canStart: true,
-      canStop: false,
+      isActive: false,
       startTime: null,
       endTime: null,
       repCount: 0
