@@ -56,10 +56,15 @@ Create or update `features/[feature-name]/plan.md` with:
             method(param: Type): ReturnType
         }
 
-    **Tests** (in order):
+    **Unit Tests** (in order):
     1. test_[behavior] - [What it validates]
     2. test_[behavior] - [What it validates]
     3. test_[edge_case] - [What it validates]
+
+    **UI Tests** (if presentation component):
+    1. test_renders_[initial_state] - [Visual elements present]
+    2. test_handles_[user_interaction] - [Response to user actions]
+    3. test_displays_[state_changes] - [Visual feedback for state transitions]
 
     ### Component: [Next Component]
     ...
