@@ -1,8 +1,9 @@
 import { useEffect, useRef } from 'preact/hooks'
 import { RefObject } from 'preact'
-import { workoutService } from '@/application/services/workout.service'
+import { poseService } from '@/application/services/pose.service'
 import { WorkoutStatus } from '@/domain/entities/workout-entity'
 import { useWorkoutState } from './use-workout-state'
+import { usePreview } from '../../hooks/use-preview'
 
 export function useFrameProcessing(
   videoRef: RefObject<HTMLVideoElement>,
@@ -10,16 +11,20 @@ export function useFrameProcessing(
 ) {
   const animationFrameRef = useRef<number>()
   const { status: workoutStatus } = useWorkoutState()
+  const { isPreviewActive } = usePreview(videoRef, canvasRef)
 
   useEffect(() => {
+    const isWorkoutActive = workoutStatus === WorkoutStatus.ACTIVE
+    const shouldProcess = isWorkoutActive || isPreviewActive
+
     const processFrame = () => {
-      if (videoRef.current && canvasRef.current && workoutStatus === WorkoutStatus.ACTIVE) {
-        workoutService.processFrame(videoRef.current, canvasRef.current)
+      if (videoRef.current && canvasRef.current && shouldProcess) {
+        poseService.processFrame(videoRef.current, canvasRef.current)
       }
       animationFrameRef.current = requestAnimationFrame(processFrame)
     }
 
-    if (workoutStatus === WorkoutStatus.ACTIVE) {
+    if (shouldProcess) {
       processFrame()
     }
 
@@ -28,5 +33,5 @@ export function useFrameProcessing(
         cancelAnimationFrame(animationFrameRef.current)
       }
     }
-  }, [workoutStatus, videoRef, canvasRef])
+  }, [workoutStatus, isPreviewActive, videoRef, canvasRef])
 }

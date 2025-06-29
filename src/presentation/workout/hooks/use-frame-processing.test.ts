@@ -1,16 +1,19 @@
 import { renderHook } from '@testing-library/preact'
 import { useFrameProcessing } from './use-frame-processing'
 import { useWorkoutState } from './use-workout-state'
-import { workoutService } from '@/application/services/workout.service'
+import { usePreview } from '../../hooks/use-preview'
+import { poseService } from '@/application/services/pose.service'
 import { WorkoutStatus } from '@/domain/entities/workout-entity'
 import { vi, beforeEach, afterEach, describe, it, expect } from 'vitest'
 import { createRef } from 'preact'
 
 vi.mock('./use-workout-state')
-vi.mock('@/application/services/workout.service')
+vi.mock('@/application/services/pose.service')
+vi.mock('../../hooks/use-preview')
 
 const mockUseWorkoutState = vi.mocked(useWorkoutState)
-const mockWorkoutService = vi.mocked(workoutService)
+const mockPoseService = vi.mocked(poseService)
+const mockUsePreview = vi.mocked(usePreview)
 
 describe('useFrameProcessing', () => {
   let mockVideoRef: ReturnType<typeof createRef<HTMLVideoElement>>
@@ -38,6 +41,17 @@ describe('useFrameProcessing', () => {
       writable: true,
       value: mockCancelAnimationFrame
     })
+
+    // Set up default mock for usePreview
+    mockUsePreview.mockReturnValue({
+      isPreviewActive: false,
+      startPreview: vi.fn(),
+      stopPreview: vi.fn(),
+      error: null
+    })
+
+    // Set up poseService mock
+    mockPoseService.processFrame = vi.fn()
   })
 
   afterEach(() => {
@@ -72,7 +86,7 @@ describe('useFrameProcessing', () => {
     expect(mockRequestAnimationFrame).not.toHaveBeenCalled()
   })
 
-  it('calls workoutService.processFrame when elements exist and workout is active', () => {
+  it('calls poseService.processFrame when elements exist and workout is active', () => {
     mockUseWorkoutState.mockReturnValue({
       status: WorkoutStatus.ACTIVE,
       canStart: false,
@@ -95,7 +109,7 @@ describe('useFrameProcessing', () => {
       frameProcessor()
     }
 
-    expect(mockWorkoutService.processFrame).toHaveBeenCalledWith(
+    expect(mockPoseService.processFrame).toHaveBeenCalledWith(
       mockVideoRef.current,
       mockCanvasRef.current
     )
@@ -144,6 +158,99 @@ describe('useFrameProcessing', () => {
 
     unmount()
 
+    expect(mockCancelAnimationFrame).toHaveBeenCalledWith(123)
+  })
+
+  it('processes frames during preview mode', () => {
+    mockUseWorkoutState.mockReturnValue({
+      status: WorkoutStatus.IDLE,
+      canStart: true,
+      canStop: false,
+      startTime: null,
+      endTime: null
+    })
+
+    mockUsePreview.mockReturnValue({
+      isPreviewActive: true,
+      startPreview: vi.fn(),
+      stopPreview: vi.fn(),
+      error: null
+    })
+
+    renderHook(() => useFrameProcessing(mockVideoRef, mockCanvasRef))
+
+    expect(mockRequestAnimationFrame).toHaveBeenCalledWith(expect.any(Function))
+  })
+
+  it('calls poseService.processFrame during preview', () => {
+    mockUseWorkoutState.mockReturnValue({
+      status: WorkoutStatus.IDLE,
+      canStart: true,
+      canStop: false,
+      startTime: null,
+      endTime: null
+    })
+
+    mockUsePreview.mockReturnValue({
+      isPreviewActive: true,
+      startPreview: vi.fn(),
+      stopPreview: vi.fn(),
+      error: null
+    })
+
+    // Capture the frame processing function
+    let frameProcessor: Function | undefined
+    mockRequestAnimationFrame.mockImplementation((fn) => {
+      frameProcessor = fn
+      return 123
+    })
+
+    renderHook(() => useFrameProcessing(mockVideoRef, mockCanvasRef))
+
+    // Call the frame processor
+    if (frameProcessor) {
+      frameProcessor()
+    }
+
+    expect(mockPoseService.processFrame).toHaveBeenCalledWith(
+      mockVideoRef.current,
+      mockCanvasRef.current
+    )
+  })
+
+  it('stops processing when both workout and preview are inactive', () => {
+    // Start with preview active
+    mockUseWorkoutState.mockReturnValue({
+      status: WorkoutStatus.IDLE,
+      canStart: true,
+      canStop: false,
+      startTime: null,
+      endTime: null
+    })
+
+    mockUsePreview.mockReturnValue({
+      isPreviewActive: true,
+      startPreview: vi.fn(),
+      stopPreview: vi.fn(),
+      error: null
+    })
+
+    const { rerender } = renderHook(() => useFrameProcessing(mockVideoRef, mockCanvasRef))
+
+    // Verify frame processing started
+    expect(mockRequestAnimationFrame).toHaveBeenCalledWith(expect.any(Function))
+    
+    // Change to both inactive
+    mockUsePreview.mockReturnValue({
+      isPreviewActive: false,
+      startPreview: vi.fn(),
+      stopPreview: vi.fn(),
+      error: null
+    })
+    
+    rerender()
+
+    // Verify animation frame was canceled
     expect(mockCancelAnimationFrame).toHaveBeenCalledWith(123)
   })
 })

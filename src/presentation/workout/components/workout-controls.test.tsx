@@ -3,11 +3,13 @@ import { render, screen } from '@testing-library/preact'
 import { WorkoutControls } from './workout-controls'
 import { useWorkoutState } from '../hooks/use-workout-state'
 import { useWorkoutActions } from '../hooks/use-workout-actions'
+import { usePreview } from '../../hooks/use-preview'
 import { WorkoutStatus } from '@/domain/entities/workout-entity'
 import { createRef } from 'preact'
 
 vi.mock('../hooks/use-workout-state')
 vi.mock('../hooks/use-workout-actions')
+vi.mock('../../hooks/use-preview')
 
 describe('WorkoutControls', () => {
   const videoRef = createRef<HTMLVideoElement>()
@@ -22,9 +24,16 @@ describe('WorkoutControls', () => {
       stopWorkout: vi.fn(),
       cameraError: undefined
     })
+
+    vi.mocked(usePreview).mockReturnValue({
+      isPreviewActive: false,
+      startPreview: vi.fn(),
+      stopPreview: vi.fn(),
+      error: null
+    })
   })
 
-  it('shows start when can start', () => {
+  it('renders both buttons', () => {
     vi.mocked(useWorkoutState).mockReturnValue({
       status: WorkoutStatus.IDLE,
       canStart: true,
@@ -35,7 +44,8 @@ describe('WorkoutControls', () => {
 
     render(<WorkoutControls videoRef={videoRef} canvasRef={canvasRef} />)
 
-    expect(screen.getByRole('button', { name: /start/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /start$/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /start preview/i })).toBeInTheDocument()
   })
 
   it('shows stop when active', () => {
@@ -70,8 +80,8 @@ describe('WorkoutControls', () => {
 
     render(<WorkoutControls videoRef={videoRef} canvasRef={canvasRef} />)
 
-    const button = screen.getByRole('button')
-    expect(button).toBeDisabled()
+    const workoutButton = screen.getByRole('button', { name: /^start$/i })
+    expect(workoutButton).toBeDisabled()
   })
 
   it('calls start with refs', () => {
@@ -99,7 +109,7 @@ describe('WorkoutControls', () => {
 
     render(<WorkoutControls videoRef={videoRef} canvasRef={canvasRef} />)
 
-    const button = screen.getByRole('button', { name: /start/i })
+    const button = screen.getByRole('button', { name: /^start$/i })
     button.click()
 
     expect(mockStartWorkout).toHaveBeenCalledWith(mockVideoElement, mockCanvasElement)
@@ -129,5 +139,20 @@ describe('WorkoutControls', () => {
     button.click()
 
     expect(mockStopWorkout).toHaveBeenCalledOnce()
+  })
+
+  it('disables preview when workout active', () => {
+    vi.mocked(useWorkoutState).mockReturnValue({
+      status: WorkoutStatus.ACTIVE,
+      canStart: false,
+      canStop: true,
+      startTime: new Date(),
+      endTime: null
+    })
+
+    render(<WorkoutControls videoRef={videoRef} canvasRef={canvasRef} />)
+
+    const previewButton = screen.getByRole('button', { name: /preview/i })
+    expect(previewButton).toBeDisabled()
   })
 })
