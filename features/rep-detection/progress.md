@@ -2,7 +2,7 @@
 
 ## Current Status
 Working on: Application Layer - Phase 2
-Phase: Planning DetectRepUseCase implementation
+Phase: Ready to proceed to WorkoutStats Enhancement
 
 ## Phase 1: Domain Layer - Rep Detection Core (COMPLETED)
 
@@ -90,11 +90,41 @@ detectRep(prediction: Prediction): Rep | null
 reset(): void
 ```
 
-## Next Phase: Application Layer - Use Cases
+## Phase 2: Application Layer - Use Cases
 
-### Component: DetectRepUseCase (PENDING)
+### Component: DetectRepUseCase ✅ COMPLETED
 **Purpose**: Bridge between application services and domain rep detection
 **Stories Covered**: STORY-001 (integration with pose processing)
+
+**Tests Completed:**
+- ✅ `calls rep detection service` - Integration with domain service
+- ✅ `adds rep to workout when detected` - Workout entity update
+- ✅ `emits workout status event on rep add` - Event emission for UI reactivity
+- ✅ `returns updated rep count` - Accurate count returned
+- ✅ `returns false when no rep detected` - No false positives
+
+**Key Features Implemented:**
+- Calls RepDetectionService to detect reps from predictions
+- Adds detected reps to workout entity
+- Publishes WorkoutStatusEvent for UI updates
+- Returns DetectRepResult with rep detection status and total count
+- Handles both successful detection and no-rep scenarios
+- Singleton export for dependency injection
+
+**Public API:**
+```typescript
+interface DetectRepParams {
+  prediction: Prediction
+  workout: WorkoutEntity
+}
+
+interface DetectRepResult {
+  repDetected: boolean
+  totalReps: number
+}
+
+execute(params: DetectRepParams): DetectRepResult
+```
 
 ### Component: WorkoutStats Enhancement (PENDING)
 **Purpose**: Add rep count to existing workout stats
