@@ -48,6 +48,52 @@ This application follows Domain-Driven Design (DDD) with Clean Architecture to s
 **Consequences**: 
 - All events must extend base Event class
 - TypeScript will catch improper event usage
+
+### Shared Service Pattern for Pose Detection
+**Date**: 2025-06-29  
+**Context**: Need to support both workout mode and preview mode with consistent pose detection behavior  
+**Decision**: Create PoseService as shared infrastructure used by both WorkoutService and PreviewService  
+**Rationale**: 
+- Eliminates code duplication between workout and preview modes
+- Ensures consistent pose detection behavior across features
+- Centralizes camera operations, dimension setup, and frame processing
+- Single responsibility: pose detection concerns separated from business logic
+- Enables seamless transitions between preview and workout modes
+**Consequences**: 
+- WorkoutService simplified to focus on workout lifecycle management
+- PreviewService enables pose detection testing without workout creation
+- Shared dependency requires coordination between services
+- Consistent user experience across preview and workout modes
+
+### Preview Mode Architecture
+**Date**: 2025-06-29  
+**Context**: Users need to test camera setup and pose detection before starting workouts  
+**Decision**: Implement preview mode as separate service with shared pose detection infrastructure  
+**Rationale**: 
+- Risk-free testing of pose detection setup
+- Independent state management prevents interference with workout mode
+- Reuses existing pose detection pipeline for consistency
+- Event-driven state changes enable UI coordination
+**Consequences**: 
+- Preview and workout modes are mutually exclusive
+- Separate PreviewService maintains preview state
+- PreviewStartedEvent and PreviewStoppedEvent published for UI updates
+- No workout records created during preview mode
+
+### Event Consolidation Pattern
+**Date**: 2025-06-29  
+**Context**: Multiple related events (PreviewStartedEvent, PreviewStoppedEvent) needed organization  
+**Decision**: Group related events in single files (e.g., preview-events.ts) without explicit constructors  
+**Rationale**: 
+- Reduces file proliferation for simple events
+- Base Event<T> constructor handles data initialization automatically
+- Easier to maintain related events together
+- Simplified event class declarations
+**Consequences**: 
+- Related events grouped logically in single files
+- Simpler event class syntax without boilerplate constructors
+- Event data interfaces still provide type safety
+- Import statements simplified for related events
 - Consistent event patterns across codebase
 - Additional type safety overhead
 

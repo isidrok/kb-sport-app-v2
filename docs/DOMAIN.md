@@ -3,11 +3,13 @@
 ## Glossary
 
 - **Workout**: A kettlebell exercise session with defined start/end times and status tracking
+- **Preview Mode**: Testing mode for pose detection without creating workout records
 - **Pose Detection**: Computer vision analysis of user body position using keypoints
 - **YOLOv8**: Object detection model adapted for pose estimation
 - **Keypoints**: Specific body joints tracked by the ML model (17 points: nose, eyes, ears, shoulders, elbows, wrists, hips, knees, ankles)
 - **Rep**: Single repetition of a kettlebell exercise (future feature)
 - **Session**: Complete workout from start to stop with tracked exercises
+- **PoseService**: Shared infrastructure for camera operations and pose detection
 
 ## Business Rules
 
@@ -22,11 +24,19 @@
    - Records end time
    - Cannot stop idle workout
 
+### Preview Mode Rules
+1. **Preview Purpose**: Allows users to test camera and pose detection setup
+2. **No Workout Creation**: Preview mode never creates workout records
+3. **Mutual Exclusivity**: Preview mode and workout mode cannot run simultaneously
+4. **State Management**: Independent preview state tracking (active/inactive)
+5. **Event Publishing**: PreviewStartedEvent and PreviewStoppedEvent for UI coordination
+
 ### Camera Requirements
 - Camera access required for pose detection
-- Video/canvas dimensions must match client rectangle
-- Camera operations independent of workout state
+- Video/canvas dimensions must match client rectangle  
+- PoseService handles camera lifecycle for both modes
 - Proper resource cleanup on stop
+- Canvas clearing uses renderer adapter, not direct context manipulation
 
 ### Model Loading
 - ML model must preload before workout can start

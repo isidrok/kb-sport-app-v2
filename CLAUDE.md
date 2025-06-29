@@ -51,6 +51,14 @@ Infrastructure ←──────┘
 - **CRITICAL**: All events MUST extend base Event<T> class - enforced by TypeScript constraints
 - Event organization by layer: Base Event (infrastructure), Application events (application/events), Domain events (domain/events)
 - EventBus and useEventBus both enforce `T extends Event` constraints
+- **Event File Organization**: Group related events in single files (e.g., `preview-events.ts`)
+- **Event Class Simplification**: Avoid explicit constructors when base Event<T> constructor suffices
+
+**Shared Service Pattern:**
+- **PoseService**: Central service for camera operations, pose detection, and rendering
+- Used by both WorkoutService (for workouts) and PreviewService (for testing)
+- Encapsulates video/canvas dimension setup, camera lifecycle, and frame processing
+- Uses dependency injection for adapters (StartCameraUseCase, StopCameraUseCase, ProcessFrameUseCase, PredictionRendererAdapter)
 
 **Component Patterns:**
 - Hooks split between state queries and action commands

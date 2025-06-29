@@ -48,6 +48,14 @@ pnpm preview      # Preview production build
 **Event System:**
 - EventBus in infrastructure layer
 - Event classes extend base `Event<T>` for type safety
+- Group related events in single files (e.g., `preview-events.ts`)
+- Avoid explicit constructors when base Event<T> constructor suffices
+
+**Shared Service Pattern:**
+- Create shared services for common functionality (e.g., PoseService)
+- Services use dependency injection with object-based configuration
+- Export both class and singleton instance
+- Use composition over inheritance for service relationships
 - Methods named `publish` and `subscribe`
 - Subscribe returns unsubscribe function
 
