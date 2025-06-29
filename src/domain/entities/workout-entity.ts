@@ -56,6 +56,10 @@ export class WorkoutEntity {
     this._reps.push(rep)
   }
 
+  isActive(): boolean {
+    return this._status === WorkoutStatus.ACTIVE
+  }
+
   start(): void {
     if (this._status === WorkoutStatus.ACTIVE) {
       throw new Error('Cannot start workout that is already active')

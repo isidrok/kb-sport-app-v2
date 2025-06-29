@@ -152,9 +152,34 @@ export interface WorkoutStats {
 }
 ```
 
-### Component: WorkoutService Enhancement (PENDING)
+### Component: WorkoutService Enhancement ✅ COMPLETED
 **Purpose**: Integrate rep detection into frame processing pipeline
 **Stories Covered**: STORY-001 (automatic counting)
+
+**Tests Completed:**
+- ✅ `calls detect rep after frame processing when workout is active` - Integration flow
+- ✅ `skips detection when workout is not active` - Conditional processing
+- ✅ `continues frame processing when rep detection throws error` - Error resilience
+
+**Key Features Implemented:**
+- Modified ProcessFrameUseCase to return prediction data
+- Updated PoseService.processFrame to expose prediction results
+- Integrated DetectRepUseCase into WorkoutService frame processing pipeline
+- Added error handling to ensure pose visualization continues on rep detection failures
+- Only processes rep detection when workout is active and prediction is available
+- Refactored status checking to WorkoutEntity.isActive() method
+
+**Integration Chain:**
+```
+WorkoutService.processFrame() 
+  → PoseService.processFrame() 
+    → ProcessFrameUseCase.execute() 
+      → returns Prediction
+  → DetectRepUseCase.execute() (if workout.isActive() && prediction)
+    → RepDetectionService.detectRep()
+    → WorkoutEntity.addRep()
+    → EventBus.publish(WorkoutStatusEvent)
+```
 
 ## Risk Mitigation Implemented
 - ✅ **Timing accuracy**: Using `performance.now()` for millisecond precision

@@ -2,6 +2,7 @@ import { WorkoutEntity } from '@/domain/entities/workout-entity'
 import { startWorkoutUseCase, type StartWorkoutUseCase } from '@/application/use-cases/start-workout-use-case'
 import { stopWorkoutUseCase, type StopWorkoutUseCase } from '@/application/use-cases/stop-workout-use-case'
 import { getWorkoutStatusUseCase, type GetWorkoutStatusUseCase, type WorkoutStats } from '@/application/use-cases/get-workout-status-use-case'
+import { detectRepUseCase, type DetectRepUseCase } from '@/application/use-cases/detect-rep-use-case'
 import { poseService, type PoseService } from './pose.service'
 import { previewService, type PreviewService } from './preview.service'
 
@@ -9,6 +10,7 @@ interface WorkoutServiceDependencies {
   startWorkoutUseCase: StartWorkoutUseCase
   stopWorkoutUseCase: StopWorkoutUseCase
   getWorkoutStatusUseCase: GetWorkoutStatusUseCase
+  detectRepUseCase: DetectRepUseCase
   poseService: PoseService
   previewService: PreviewService
 }
@@ -30,6 +32,7 @@ export class WorkoutService {
   private startWorkoutUseCase: StartWorkoutUseCase
   private stopWorkoutUseCase: StopWorkoutUseCase
   private getWorkoutStatusUseCase: GetWorkoutStatusUseCase
+  private detectRepUseCase: DetectRepUseCase
   private poseService: PoseService
   private previewService: PreviewService
 
@@ -37,6 +40,7 @@ export class WorkoutService {
     this.startWorkoutUseCase = dependencies.startWorkoutUseCase
     this.stopWorkoutUseCase = dependencies.stopWorkoutUseCase
     this.getWorkoutStatusUseCase = dependencies.getWorkoutStatusUseCase
+    this.detectRepUseCase = dependencies.detectRepUseCase
     this.poseService = dependencies.poseService
     this.previewService = dependencies.previewService
   }
@@ -71,7 +75,21 @@ export class WorkoutService {
   }
 
   processFrame(videoElement: HTMLVideoElement, canvasElement: HTMLCanvasElement): void {
-    this.poseService.processFrame(videoElement, canvasElement)
+    const prediction = this.poseService.processFrame(videoElement, canvasElement)
+    
+    // Only perform rep detection when workout is active and we have a prediction
+    if (this._currentWorkout && this._currentWorkout.isActive() && prediction) {
+      try {
+        this.detectRepUseCase.execute({
+          prediction,
+          workout: this._currentWorkout
+        })
+      } catch (error) {
+        // Continue frame processing even if rep detection fails
+        // This ensures the pose visualization continues to work
+        console.warn('Rep detection failed:', error)
+      }
+    }
   }
 
   getWorkoutStatus(): WorkoutStats | null {
@@ -87,6 +105,7 @@ export const workoutService = new WorkoutService({
   startWorkoutUseCase,
   stopWorkoutUseCase,
   getWorkoutStatusUseCase,
+  detectRepUseCase,
   poseService,
   previewService
 })

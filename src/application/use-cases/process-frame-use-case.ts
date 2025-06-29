@@ -1,5 +1,6 @@
 import { PredictionAdapter, predictionAdapter } from '@/infrastructure/adapters/prediction.adapter'
 import { PredictionRendererAdapter, predictionRendererAdapter } from '@/infrastructure/adapters/prediction-renderer.adapter'
+import { type Prediction } from '@/domain/types/rep-detection.types'
 
 export class ProcessFrameUseCase {
   constructor(
@@ -7,14 +8,14 @@ export class ProcessFrameUseCase {
     private rendererAdapter: PredictionRendererAdapter
   ) {}
 
-  execute(videoElement: HTMLVideoElement, canvasElement: HTMLCanvasElement): void {
+  execute(videoElement: HTMLVideoElement, canvasElement: HTMLCanvasElement): Prediction | null {
     if (!this.predictionAdapter.isInitialized()) {
-      return
+      return null
     }
 
     const result = this.predictionAdapter.process(videoElement)
     if (!result) {
-      return
+      return null
     }
     
     this.rendererAdapter.render({
@@ -23,6 +24,8 @@ export class ProcessFrameUseCase {
       prediction: result.bestPrediction,
       confidenceThreshold: 0.5
     })
+    
+    return result.bestPrediction
   }
 }
 

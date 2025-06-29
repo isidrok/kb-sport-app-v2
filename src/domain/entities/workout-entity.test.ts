@@ -83,4 +83,22 @@ describe('WorkoutEntity', () => {
     expect(workout.getRepCount()).toBe(3)
     expect(workout.reps).toHaveLength(3)
   })
+
+  it('isActive returns false when idle', () => {
+    const workout = new WorkoutEntity('workout-1')
+    expect(workout.isActive()).toBe(false)
+  })
+
+  it('isActive returns true when active', () => {
+    const workout = new WorkoutEntity('workout-1')
+    workout.start()
+    expect(workout.isActive()).toBe(true)
+  })
+
+  it('isActive returns false when stopped', () => {
+    const workout = new WorkoutEntity('workout-1')
+    workout.start()
+    workout.stop()
+    expect(workout.isActive()).toBe(false)
+  })
 })

@@ -2,6 +2,7 @@ import { startCameraUseCase, type StartCameraUseCase } from '@/application/use-c
 import { stopCameraUseCase, type StopCameraUseCase } from '@/application/use-cases/stop-camera-use-case'
 import { processFrameUseCase, type ProcessFrameUseCase } from '@/application/use-cases/process-frame-use-case'
 import { predictionRendererAdapter, type PredictionRendererAdapter } from '@/infrastructure/adapters/prediction-renderer.adapter'
+import { type Prediction } from '@/domain/types/rep-detection.types'
 
 interface PoseServiceDependencies {
   startCameraUseCase: StartCameraUseCase
@@ -61,8 +62,8 @@ export class PoseService {
     }
   }
 
-  processFrame(videoElement: HTMLVideoElement, canvasElement: HTMLCanvasElement): void {
-    this.processFrameUseCase.execute(videoElement, canvasElement)
+  processFrame(videoElement: HTMLVideoElement, canvasElement: HTMLCanvasElement): Prediction | null {
+    return this.processFrameUseCase.execute(videoElement, canvasElement)
   }
 
   isActive(): boolean {
