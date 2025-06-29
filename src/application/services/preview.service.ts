@@ -61,6 +61,10 @@ export class PreviewService {
     this.eventBus.publish(event)
   }
 
+  processFrame(videoElement: HTMLVideoElement, canvasElement: HTMLCanvasElement): void {
+    this.poseService.processFrame(videoElement, canvasElement)
+  }
+
   isPreviewActive(): boolean {
     return this._isPreviewActive
   }

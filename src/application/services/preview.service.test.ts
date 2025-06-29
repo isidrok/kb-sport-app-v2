@@ -101,4 +101,10 @@ describe('PreviewService', () => {
       })
     )
   })
+
+  it('processes frame through pose service', () => {
+    previewService.processFrame(mockVideoElement, mockCanvasElement)
+
+    expect(mockPoseService.processFrame).toHaveBeenCalledWith(mockVideoElement, mockCanvasElement)
+  })
 })

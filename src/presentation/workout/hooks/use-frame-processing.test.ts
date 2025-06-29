@@ -2,17 +2,20 @@ import { renderHook } from '@testing-library/preact'
 import { useFrameProcessing } from './use-frame-processing'
 import { useWorkoutState } from './use-workout-state'
 import { usePreview } from '../../hooks/use-preview'
-import { poseService } from '@/application/services/pose.service'
+import { workoutService } from '@/application/services/workout.service'
+import { previewService } from '@/application/services/preview.service'
 import { WorkoutStatus } from '@/domain/entities/workout-entity'
 import { vi, beforeEach, afterEach, describe, it, expect } from 'vitest'
 import { createRef } from 'preact'
 
 vi.mock('./use-workout-state')
-vi.mock('@/application/services/pose.service')
+vi.mock('@/application/services/workout.service')
+vi.mock('@/application/services/preview.service')
 vi.mock('../../hooks/use-preview')
 
 const mockUseWorkoutState = vi.mocked(useWorkoutState)
-const mockPoseService = vi.mocked(poseService)
+const mockWorkoutService = vi.mocked(workoutService)
+const mockPreviewService = vi.mocked(previewService)
 const mockUsePreview = vi.mocked(usePreview)
 
 describe('useFrameProcessing', () => {
@@ -50,8 +53,19 @@ describe('useFrameProcessing', () => {
       error: null
     })
 
-    // Set up poseService mock
-    mockPoseService.processFrame = vi.fn()
+    // Set up service mocks
+    mockWorkoutService.processFrame = vi.fn()
+    mockPreviewService.processFrame = vi.fn()
+    
+    // Mock video element properties for readiness check
+    Object.defineProperty(mockVideoRef.current, 'srcObject', {
+      writable: true,
+      value: new MediaStream()
+    })
+    Object.defineProperty(mockVideoRef.current, 'readyState', {
+      writable: true,
+      value: 4 // HAVE_ENOUGH_DATA
+    })
   })
 
   afterEach(() => {
@@ -88,7 +102,7 @@ describe('useFrameProcessing', () => {
     expect(mockRequestAnimationFrame).not.toHaveBeenCalled()
   })
 
-  it('calls poseService.processFrame when elements exist and workout is active', () => {
+  it('calls workoutService.processFrame when elements exist and workout is active', () => {
     mockUseWorkoutState.mockReturnValue({
       status: WorkoutStatus.ACTIVE,
       canStart: false,
@@ -112,7 +126,7 @@ describe('useFrameProcessing', () => {
       frameProcessor()
     }
 
-    expect(mockPoseService.processFrame).toHaveBeenCalledWith(
+    expect(mockWorkoutService.processFrame).toHaveBeenCalledWith(
       mockVideoRef.current,
       mockCanvasRef.current
     )
@@ -189,7 +203,7 @@ describe('useFrameProcessing', () => {
     expect(mockRequestAnimationFrame).toHaveBeenCalledWith(expect.any(Function))
   })
 
-  it('calls poseService.processFrame during preview', () => {
+  it('calls previewService.processFrame during preview', () => {
     mockUseWorkoutState.mockReturnValue({
       status: WorkoutStatus.IDLE,
       canStart: true,
@@ -220,7 +234,7 @@ describe('useFrameProcessing', () => {
       frameProcessor()
     }
 
-    expect(mockPoseService.processFrame).toHaveBeenCalledWith(
+    expect(mockPreviewService.processFrame).toHaveBeenCalledWith(
       mockVideoRef.current,
       mockCanvasRef.current
     )
