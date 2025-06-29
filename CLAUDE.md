@@ -78,8 +78,9 @@ Infrastructure ←──────┘
 - Use `vi.mock()` at module level for external dependencies
 - Import `Mocked` type from vitest: `import { Mocked } from 'vitest'`
 - Create mocks using `Partial<Type> as Mocked<Type>` pattern
-- Avoid testing CSS classes, styling, or return types
+- **NEVER TEST CSS OR TYPES** - Avoid testing CSS classes, styling, or return types
 - Focus on public APIs and expected outcomes
+- **ALWAYS WRITE TESTS FOR BUGS** - Every bug fix must include a test
 
 ### File Naming Conventions
 - Infrastructure adapters: `.adapter.ts` suffix
@@ -101,6 +102,10 @@ Infrastructure ←──────┘
 - Use `@/` path aliases for all cross-layer imports
 - Feature to shared: Relative paths `../../hooks/use-event-bus`
 - Combined import syntax: `import { service, type ServiceType }`
+
+### Version Control Standards
+- **NEVER COMMIT WITHOUT PERMISSION** - Always ask before committing changes
+- Follow conventional commit message format when commits are authorized
 
 ## Module Registry
 
