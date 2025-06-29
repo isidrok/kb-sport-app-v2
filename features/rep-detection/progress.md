@@ -126,9 +126,31 @@ interface DetectRepResult {
 execute(params: DetectRepParams): DetectRepResult
 ```
 
-### Component: WorkoutStats Enhancement (PENDING)
+### Component: WorkoutStats Enhancement ✅ COMPLETED
 **Purpose**: Add rep count to existing workout stats
 **Stories Covered**: STORY-002 (displaying rep count)
+
+**Tests Completed:**
+- ✅ `includes rep count in stats` - Rep count included in stats
+- ✅ `rep count updates with workout changes` - Reactive to workout updates
+
+**Key Features Implemented:**
+- Added `repCount: number` to WorkoutStats interface
+- Modified GetWorkoutStatusUseCase to include workout.getRepCount()
+- Updated all presentation layer test mocks to include repCount
+- Maintains reactive updates when workout rep count changes
+
+**Enhanced Interface:**
+```typescript
+export interface WorkoutStats {
+  status: WorkoutStatus
+  startTime: Date | null
+  endTime: Date | null
+  canStart: boolean
+  canStop: boolean
+  repCount: number // NEW
+}
+```
 
 ### Component: WorkoutService Enhancement (PENDING)
 **Purpose**: Integrate rep detection into frame processing pipeline

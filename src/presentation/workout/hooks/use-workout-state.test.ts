@@ -32,7 +32,8 @@ describe('useWorkoutState', () => {
       canStart: true,
       canStop: false,
       startTime: null,
-      endTime: null
+      endTime: null,
+      repCount: 0
     }
     
     vi.mocked(workoutService.getWorkoutStatus).mockReturnValue(mockStats)
@@ -52,7 +53,8 @@ describe('useWorkoutState', () => {
       canStart: true,
       canStop: false,
       startTime: null,
-      endTime: null
+      endTime: null,
+      repCount: 0
     }
     
     const updatedStats = {
@@ -60,7 +62,8 @@ describe('useWorkoutState', () => {
       canStart: false,
       canStop: true,
       startTime: new Date(),
-      endTime: null
+      endTime: null,
+      repCount: 0
     }
     
     vi.mocked(workoutService.getWorkoutStatus)

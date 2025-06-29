@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { GetWorkoutStatusUseCase } from './get-workout-status-use-case'
 import { WorkoutEntity } from '@/domain/entities/workout-entity'
+import { type Rep } from '@/domain/types/rep-detection.types'
 
 describe('GetWorkoutStatusUseCase', () => {
   let useCase: GetWorkoutStatusUseCase
@@ -50,5 +51,42 @@ describe('GetWorkoutStatusUseCase', () => {
 
     expect(stats.canStart).toBe(true)
     expect(stats.canStop).toBe(false)
+  })
+
+  it('includes rep count in stats', () => {
+    const rep: Rep = {
+      hand: 'both',
+      timestamp: new Date()
+    }
+    activeWorkout.addRep(rep)
+    
+    const stats = useCase.execute(activeWorkout)
+    
+    expect(stats.repCount).toBe(1)
+  })
+
+  it('rep count updates with workout changes', () => {
+    const rep1: Rep = {
+      hand: 'left',
+      timestamp: new Date()
+    }
+    const rep2: Rep = {
+      hand: 'right',
+      timestamp: new Date()
+    }
+    
+    // Initially no reps
+    let stats = useCase.execute(activeWorkout)
+    expect(stats.repCount).toBe(0)
+    
+    // Add first rep
+    activeWorkout.addRep(rep1)
+    stats = useCase.execute(activeWorkout)
+    expect(stats.repCount).toBe(1)
+    
+    // Add second rep
+    activeWorkout.addRep(rep2)
+    stats = useCase.execute(activeWorkout)
+    expect(stats.repCount).toBe(2)
   })
 })

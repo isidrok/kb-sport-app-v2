@@ -39,7 +39,8 @@ describe('WorkoutControls', () => {
       canStart: true,
       canStop: false,
       startTime: null,
-      endTime: null
+      endTime: null,
+      repCount: 0
     })
 
     render(<WorkoutControls videoRef={videoRef} canvasRef={canvasRef} />)
@@ -54,7 +55,8 @@ describe('WorkoutControls', () => {
       canStart: false,
       canStop: true,
       startTime: new Date(),
-      endTime: null
+      endTime: null,
+      repCount: 0
     })
 
     render(<WorkoutControls videoRef={videoRef} canvasRef={canvasRef} />)
@@ -68,7 +70,8 @@ describe('WorkoutControls', () => {
       canStart: true,
       canStop: false,
       startTime: null,
-      endTime: null
+      endTime: null,
+      repCount: 0
     })
 
     vi.mocked(useWorkoutActions).mockReturnValue({
@@ -97,7 +100,8 @@ describe('WorkoutControls', () => {
       canStart: true,
       canStop: false,
       startTime: null,
-      endTime: null
+      endTime: null,
+      repCount: 0
     })
 
     vi.mocked(useWorkoutActions).mockReturnValue({
@@ -123,7 +127,8 @@ describe('WorkoutControls', () => {
       canStart: false,
       canStop: true,
       startTime: new Date(),
-      endTime: null
+      endTime: null,
+      repCount: 0
     })
 
     vi.mocked(useWorkoutActions).mockReturnValue({
@@ -147,7 +152,8 @@ describe('WorkoutControls', () => {
       canStart: false,
       canStop: true,
       startTime: new Date(),
-      endTime: null
+      endTime: null,
+      repCount: 0
     })
 
     render(<WorkoutControls videoRef={videoRef} canvasRef={canvasRef} />)

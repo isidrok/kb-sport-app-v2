@@ -64,7 +64,8 @@ describe('useFrameProcessing', () => {
       canStart: false,
       canStop: true,
       startTime: new Date(),
-      endTime: null
+      endTime: null,
+      repCount: 0
     })
 
     renderHook(() => useFrameProcessing(mockVideoRef, mockCanvasRef))
@@ -78,7 +79,8 @@ describe('useFrameProcessing', () => {
       canStart: true,
       canStop: false,
       startTime: null,
-      endTime: null
+      endTime: null,
+      repCount: 0
     })
 
     renderHook(() => useFrameProcessing(mockVideoRef, mockCanvasRef))
@@ -92,7 +94,8 @@ describe('useFrameProcessing', () => {
       canStart: false,
       canStop: true,
       startTime: new Date(),
-      endTime: null
+      endTime: null,
+      repCount: 0
     })
 
     // Capture the frame processing function
@@ -122,7 +125,8 @@ describe('useFrameProcessing', () => {
       canStart: false,
       canStop: true,
       startTime: new Date(),
-      endTime: null
+      endTime: null,
+      repCount: 0
     })
 
     const { rerender } = renderHook(() => useFrameProcessing(mockVideoRef, mockCanvasRef))
@@ -136,7 +140,8 @@ describe('useFrameProcessing', () => {
       canStart: true,
       canStop: false,
       startTime: new Date(),
-      endTime: new Date()
+      endTime: new Date(),
+      repCount: 0
     })
     
     rerender()
@@ -151,7 +156,8 @@ describe('useFrameProcessing', () => {
       canStart: false,
       canStop: true,
       startTime: new Date(),
-      endTime: null
+      endTime: null,
+      repCount: 0
     })
 
     const { unmount } = renderHook(() => useFrameProcessing(mockVideoRef, mockCanvasRef))
@@ -167,7 +173,8 @@ describe('useFrameProcessing', () => {
       canStart: true,
       canStop: false,
       startTime: null,
-      endTime: null
+      endTime: null,
+      repCount: 0
     })
 
     mockUsePreview.mockReturnValue({
@@ -188,7 +195,8 @@ describe('useFrameProcessing', () => {
       canStart: true,
       canStop: false,
       startTime: null,
-      endTime: null
+      endTime: null,
+      repCount: 0
     })
 
     mockUsePreview.mockReturnValue({
@@ -225,7 +233,8 @@ describe('useFrameProcessing', () => {
       canStart: true,
       canStop: false,
       startTime: null,
-      endTime: null
+      endTime: null,
+      repCount: 0
     })
 
     mockUsePreview.mockReturnValue({

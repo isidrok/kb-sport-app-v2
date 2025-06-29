@@ -6,6 +6,7 @@ export interface WorkoutStats {
   endTime: Date | null
   canStart: boolean
   canStop: boolean
+  repCount: number
 }
 
 export class GetWorkoutStatusUseCase {
@@ -15,7 +16,8 @@ export class GetWorkoutStatusUseCase {
       startTime: workout.startTime,
       endTime: workout.endTime,
       canStart: workout.status === WorkoutStatus.IDLE || workout.status === WorkoutStatus.STOPPED,
-      canStop: workout.status === WorkoutStatus.ACTIVE
+      canStop: workout.status === WorkoutStatus.ACTIVE,
+      repCount: workout.getRepCount()
     }
   }
 }
