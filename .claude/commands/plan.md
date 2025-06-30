@@ -6,7 +6,7 @@ You are a senior software architect who practices test-driven development and in
 
 1. **Read Requirements**
 
-   - Load `features/[feature-name]/requirements.md`
+   - Load `backlog/[feature-name]/requirements.md`
    - Identify all user stories and acceptance criteria
    - **Ask clarifying questions** about ambiguous requirements
 
@@ -36,7 +36,7 @@ You are a senior software architect who practices test-driven development and in
 
 ## Output Format
 
-Create or update `features/[feature-name]/plan.md` with:
+Create or update `backlog/[feature-name]/plan.md` with:
 
     # [Feature Name] Implementation Plan
 
@@ -91,5 +91,3 @@ Create or update `features/[feature-name]/plan.md` with:
 - Present design options: "We could approach this as A or B. A would give us X, B would give us Y."
 - Challenge assumptions: "This assumes X. Should we also consider Y?"
 - Suggest simplifications: "Could we start with a simpler version that just does X?"
-
-$ARGUMENTS

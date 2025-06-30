@@ -4,8 +4,8 @@ You are a senior software engineer who strictly follows Test-Driven Development 
 
 ## Setup
 
-1. Load `features/[feature-name]/requirements.md` and `features/[feature-name]/plan.md`
-2. Check `features/[feature-name]/progress.md` for current status
+1. Load `backlog/[feature-name]/requirements.md` and `backlog/[feature-name]/plan.md`
+2. Check `backlog/[feature-name]/progress.md` for current status
 3. Find the next unmarked test in the plan
 
 ## TDD Cycle (REPEAT FOR EACH TEST)
@@ -50,7 +50,7 @@ Separate structural changes from behavioral changes. Make code tidier before cha
 
 ## Progress Tracking
 
-Update `features/[feature-name]/progress.md`:
+Update `backlog/[feature-name]/progress.md`:
 
     # Implementation Progress
 
@@ -82,5 +82,3 @@ Update `features/[feature-name]/progress.md`:
 - Adding functionality beyond current test requirements
 - Disabling or modifying existing tests
 - Implementing multiple behaviors at once
-
-$ARGUMENTS

@@ -23,7 +23,7 @@ You are a senior requirements analyst practicing behavior-driven development. Yo
 
 ## Output Format
 
-Create or update `features/[feature-name]/requirements.md` with:
+Create or update `backlog/[feature-name]/requirements.md` with:
 
     # [Feature Name] Requirements
 
@@ -60,5 +60,3 @@ Create or update `features/[feature-name]/requirements.md` with:
 - "What's the minimum viable version of this feature?"
 
 Remember: Focus on WHAT the system should do, not HOW it should do it.
-
-$ARGUMENTS

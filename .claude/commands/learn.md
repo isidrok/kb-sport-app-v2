@@ -226,5 +226,3 @@ When updating documentation:
 - docs/ folder has comprehensive human documentation
 - No important decisions from conversation are lost
 - Clear separation between AI instructions and human docs
-
-$ARGUMENTS
