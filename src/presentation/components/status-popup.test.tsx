@@ -39,8 +39,8 @@ describe('StatusPopup', () => {
     expect(screen.getByText('Camera access denied')).toBeInTheDocument()
   })
 
-  it('handles loading and error types', () => {
-    const { rerender } = render(
+  it('handles loading and error types with icons', () => {
+    const { rerender, container } = render(
       <StatusPopup 
         message="Loading..." 
         type="loading" 
@@ -50,6 +50,7 @@ describe('StatusPopup', () => {
 
     const loadingPopup = screen.getByText('Loading...')
     expect(loadingPopup).toBeInTheDocument()
+    expect(container.querySelector('.material-icons')).toHaveTextContent('hourglass_empty')
 
     rerender(
       <StatusPopup 
@@ -61,5 +62,18 @@ describe('StatusPopup', () => {
 
     const errorPopup = screen.getByText('Error occurred')
     expect(errorPopup).toBeInTheDocument()
+    expect(container.querySelector('.material-icons')).toHaveTextContent('error')
+  })
+
+  it('works without message', () => {
+    const { container } = render(
+      <StatusPopup 
+        type="loading" 
+        visible={true} 
+      />
+    )
+
+    expect(container.querySelector('.material-icons')).toHaveTextContent('hourglass_empty')
+    expect(container.querySelector('.message')).not.toBeInTheDocument()
   })
 })
