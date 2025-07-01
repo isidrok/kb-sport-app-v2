@@ -1,0 +1,168 @@
+/* Backdrop overlay */
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+}
+
+/* Main drawer container - side drawer covering full height */
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 400px;
+  background: var(--background);
+  border-left: 1px solid rgba(128, 128, 128, 0.3);
+  z-index: 2001;
+  
+  display: flex;
+  flex-direction: column;
+  
+  /* Smooth entry animation from right */
+  animation: slideInFromRight 0.3s ease-out;
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Header section */
+.header {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  font-size: 1.5rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+/* Content area */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  
+  /* Custom scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(128, 128, 128, 0.3) transparent;
+}
+
+.content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.content::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.3);
+  border-radius: 3px;
+}
+
+.content::-webkit-scrollbar-thumb:hover {
+  background: rgba(128, 128, 128, 0.5);
+}
+
+/* Loading and empty states */
+.loading, .empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.loadingIcon, .emptyIcon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.6;
+}
+
+.loadingText, .emptyText {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.loadingSubtext, .emptySubtext {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+/* Workout list */
+.workoutList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Mobile responsiveness - full width on mobile */
+@media (max-width: 768px) {
+  .drawer {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid rgba(128, 128, 128, 0.3);
+  }
+  
+  .header {
+    padding: 1rem;
+  }
+  
+  .title {
+    font-size: 1.25rem;
+  }
+  
+  .content {
+    padding: 0.75rem;
+  }
+  
+  .loading, .empty {
+    padding: 2rem 1rem;
+  }
+  
+  .loadingIcon, .emptyIcon {
+    font-size: 2.5rem;
+  }
+  
+  .workoutList {
+    gap: 0.75rem;
+  }
+}

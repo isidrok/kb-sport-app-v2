@@ -38,8 +38,10 @@ describe('WorkoutCard', () => {
       )
 
       // Assert
-      expect(screen.getByText('45 reps')).toBeInTheDocument()
-      expect(screen.getByText('2.9 RPM')).toBeInTheDocument()
+      expect(screen.getByText('45')).toBeInTheDocument()
+      expect(screen.getByText('Reps')).toBeInTheDocument()
+      expect(screen.getByText('2.9')).toBeInTheDocument()
+      expect(screen.getByText('RPM')).toBeInTheDocument()
       expect(screen.getByText('15.7 MB')).toBeInTheDocument()
     })
 
@@ -70,7 +72,7 @@ describe('WorkoutCard', () => {
       )
 
       // Assert
-      expect(screen.getByRole('button', { name: 'View Video' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'View' })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'Download' })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'Delete' })).toBeInTheDocument()
     })
@@ -89,7 +91,7 @@ describe('WorkoutCard', () => {
       )
 
       // Act
-      fireEvent.click(screen.getByRole('button', { name: 'View Video' }))
+      fireEvent.click(screen.getByRole('button', { name: 'View' }))
 
       // Assert
       expect(mockOnView).toHaveBeenCalledWith('workout_2024-07-01T10:30:00.000Z')

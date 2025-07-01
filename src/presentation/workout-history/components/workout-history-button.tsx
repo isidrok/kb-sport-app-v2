@@ -1,4 +1,5 @@
 import { Icon } from '@/presentation/components/icon'
+import styles from './workout-history-button.module.css'
 
 interface WorkoutHistoryButtonProps {
   onClick: () => void
@@ -6,8 +7,12 @@ interface WorkoutHistoryButtonProps {
 
 export function WorkoutHistoryButton({ onClick }: WorkoutHistoryButtonProps) {
   return (
-    <button onClick={onClick} data-testid="history-button">
-      <Icon name="history" />
+    <button 
+      className={styles.historyButton} 
+      onClick={onClick} 
+      data-testid="history-button"
+    >
+      <Icon name="history" className={styles.buttonIcon} />
     </button>
   )
 }

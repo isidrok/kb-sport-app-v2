@@ -40,7 +40,8 @@ describe('WorkoutHistoryDrawer', () => {
       // Assert
       const drawer = screen.getByRole('dialog')
       expect(drawer).toBeInTheDocument()
-      expect(drawer).toHaveClass('drawer')
+      // Check that drawer has the correct CSS module class
+      expect(drawer.className).toMatch(/drawer/)
     })
 
     it('displays loading while fetching workouts', () => {
