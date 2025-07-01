@@ -15,9 +15,9 @@
 .workoutButton,
 .container button {
   /* Frosted glass effect */
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(64, 64, 64, 0.8);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(128, 128, 128, 0.6);
   border-radius: 50px;
   
   /* Button styling */
@@ -33,6 +33,13 @@
   min-height: 56px;
 }
 
+/* Icon sizing */
+.buttonIcon {
+  font-size: 2rem;
+  display: inline-block;
+  width: auto;
+}
+
 /* Legacy support for single workout button (if used elsewhere) */
 .workoutButton {
   position: fixed;
@@ -45,7 +52,7 @@
 /* Hover states for buttons */
 .workoutButton:hover:not(:disabled),
 .container button:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(96, 96, 96, 0.9);
   transform: translateY(-2px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 }
@@ -72,7 +79,7 @@
 .container button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(64, 64, 64, 0.5);
 }
 
 /* Active state for buttons (red background) */

@@ -3,7 +3,7 @@ import { render, fireEvent } from '@testing-library/preact'
 import { PreviewButton } from './preview-button'
 
 describe('PreviewButton', () => {
-  it('renders start preview text', () => {
+  it('renders visibility icon when not active', () => {
     const mockStartPreview = vi.fn()
     const mockStopPreview = vi.fn()
     
@@ -16,10 +16,11 @@ describe('PreviewButton', () => {
       />
     )
     
-    expect(container.textContent).toContain('Start Preview')
+    expect(container.querySelector('.material-icons')).toHaveTextContent('visibility')
+    expect(container.querySelector('button')).toHaveAttribute('aria-label', 'Start Preview')
   })
 
-  it('renders stop preview text when active', () => {
+  it('renders stop icon when active', () => {
     const mockStartPreview = vi.fn()
     const mockStopPreview = vi.fn()
     
@@ -32,7 +33,8 @@ describe('PreviewButton', () => {
       />
     )
     
-    expect(container.textContent).toContain('Stop Preview')
+    expect(container.querySelector('.material-icons')).toHaveTextContent('visibility_off')
+    expect(container.querySelector('button')).toHaveAttribute('aria-label', 'Stop Preview')
   })
 
   it('sets disabled attribute when disabled', () => {

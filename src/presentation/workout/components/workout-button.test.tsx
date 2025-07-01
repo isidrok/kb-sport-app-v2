@@ -3,7 +3,7 @@ import { render, fireEvent } from '@testing-library/preact'
 import { WorkoutButton } from './workout-button'
 
 describe('WorkoutButton', () => {
-  it('renders start text when can start', () => {
+  it('renders play icon when can start', () => {
     const mockStartWorkout = vi.fn()
     const mockStopWorkout = vi.fn()
     
@@ -17,10 +17,11 @@ describe('WorkoutButton', () => {
       />
     )
     
-    expect(container.textContent).toContain('Start')
+    expect(container.querySelector('.material-icons')).toHaveTextContent('play_arrow')
+    expect(container.querySelector('button')).toHaveAttribute('aria-label', 'Start')
   })
 
-  it('renders stop text when can stop', () => {
+  it('renders stop icon when can stop', () => {
     const mockStartWorkout = vi.fn()
     const mockStopWorkout = vi.fn()
     
@@ -34,7 +35,8 @@ describe('WorkoutButton', () => {
       />
     )
     
-    expect(container.textContent).toContain('Stop')
+    expect(container.querySelector('.material-icons')).toHaveTextContent('stop')
+    expect(container.querySelector('button')).toHaveAttribute('aria-label', 'Stop')
   })
 
   it('sets disabled attribute when starting', () => {

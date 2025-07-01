@@ -1,0 +1,9 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Kettlebell shape -->
+  <circle cx="16" cy="20" r="8" fill="#4A5568" stroke="#2D3748" stroke-width="1"/>
+  <rect x="12" y="8" width="8" height="8" rx="2" fill="#4A5568" stroke="#2D3748" stroke-width="1"/>
+  <rect x="14" y="16" width="4" height="4" fill="#4A5568"/>
+  <!-- Handle -->
+  <path d="M12 12 Q8 12 8 16 Q8 20 12 20" stroke="#2D3748" stroke-width="2" fill="none"/>
+  <path d="M20 12 Q24 12 24 16 Q24 20 20 20" stroke="#2D3748" stroke-width="2" fill="none"/>
+</svg>
