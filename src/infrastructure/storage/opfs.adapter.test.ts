@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { OPFSAdapter, type WorkoutMetadata } from './opfs.adapter';
+import { OPFSAdapter } from './opfs.adapter';
+import { type WorkoutMetadata } from '@/domain/types/workout-storage.types';
 
 // Mock OPFS APIs
 const mockWritableStream = {
@@ -106,8 +107,8 @@ describe('OPFSAdapter', () => {
       totalReps: 45,
       rpm: 2.9,
       reps: [
-        { timestamp: 1234567890, repNumber: 1, duration: 2.1 },
-        { timestamp: 1234567892, repNumber: 2, duration: 2.0 }
+        { timestamp: 1234567890, hand: 'left' },
+        { timestamp: 1234567892, hand: 'right' }
       ],
       videoSize: 15728640
     };

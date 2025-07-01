@@ -1,17 +1,4 @@
-export interface WorkoutMetadata {
-  workoutId: string;
-  startTime: string;
-  endTime: string;
-  duration: number;
-  totalReps: number;
-  rpm: number;
-  reps: Array<{
-    timestamp: number;
-    repNumber: number;
-    duration: number;
-  }>;
-  videoSize: number;
-}
+import { WorkoutMetadata } from '@/domain/types/workout-storage.types'
 
 export class OPFSAdapter {
   private rootPromise: Promise<FileSystemDirectoryHandle> | null = null;
