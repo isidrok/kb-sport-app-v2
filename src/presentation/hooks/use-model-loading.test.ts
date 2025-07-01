@@ -22,10 +22,11 @@ describe('useModelLoading', () => {
     const { result } = renderHook(() => useModelLoading())
 
     expect(result.current.status).toBe('loading')
-    expect(result.current.message).toBeUndefined()
+    expect(result.current.message).toBe('Loading AI model...')
   })
 
-  it('updates on model events', () => {
+  it('updates on model events', async () => {
+    vi.useFakeTimers()
     let mockListener: (event: ModelLoadingEvent) => void = vi.fn()
     
     mockSubscribe.mockImplementation((listener) => {
@@ -35,7 +36,9 @@ describe('useModelLoading', () => {
 
     const { result } = renderHook(() => useModelLoading())
 
-    // Simulate ready event
+    // Simulate ready event after minimum loading time has passed
+    vi.advanceTimersByTime(900) // Advance past MINIMUM_LOADING_TIME (800ms)
+    
     const readyEvent = new ModelLoadingEvent({ status: 'ready' })
     act(() => {
       mockListener(readyEvent)
@@ -43,6 +46,8 @@ describe('useModelLoading', () => {
 
     expect(result.current.status).toBe('ready')
     expect(result.current.message).toBeUndefined()
+    
+    vi.useRealTimers()
   })
 
   it('cleans up listeners', () => {

@@ -77,8 +77,19 @@ describe('RepDetectionStateMachine', () => {
   it('both hands priority over single', async () => {
     const stateMachine = new RepDetectionStateMachine()
     
-    // Wait for 300ms to meet timing requirement for down state
-    await new Promise(resolve => setTimeout(resolve, 300))
+    // Start with wrists below nose (down state)
+    const downKeyPoints: RepKeyPoints = {
+      noseY: 200,
+      leftWristY: 250,
+      rightWristY: 260,
+      leftWristConfidence: 0.8,
+      rightWristConfidence: 0.9,
+      noseConfidence: 0.7
+    }
+    
+    // Process down state for minimum duration
+    stateMachine.processKeyPoints(downKeyPoints)
+    await new Promise(resolve => setTimeout(resolve, 350)) // Wait longer than minimum
     
     // Both hands above nose - transition to up
     const upKeyPoints: RepKeyPoints = {
@@ -90,12 +101,14 @@ describe('RepDetectionStateMachine', () => {
       noseConfidence: 0.7
     }
     
-    stateMachine.processKeyPoints(upKeyPoints) // Transition to up
+    // First call transitions to up state
+    const transitionResult = stateMachine.processKeyPoints(upKeyPoints)
+    expect(transitionResult.repDetected).toBe(false) // No rep detected on transition
     
-    // Wait another 300ms in up state
-    await new Promise(resolve => setTimeout(resolve, 300))
+    // Wait for minimum duration in up state
+    await new Promise(resolve => setTimeout(resolve, 350))
     
-    // Should detect rep with 'both' hand after 300ms up
+    // Should detect rep with 'both' hand after being up for minimum duration
     const result = stateMachine.processKeyPoints(upKeyPoints)
     
     expect(result.repDetected).toBe(true)
