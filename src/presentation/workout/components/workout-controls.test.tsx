@@ -6,6 +6,7 @@ import { useWorkoutActions } from '../hooks/use-workout-actions'
 import { usePreview } from '../../hooks/use-preview'
 import { WorkoutStatus } from '@/domain/entities/workout-entity'
 import { createRef } from 'preact'
+import { createMockWorkoutStats } from '@/test-helpers/workout-stats-factory'
 
 vi.mock('../hooks/use-workout-state')
 vi.mock('../hooks/use-workout-actions')
@@ -34,13 +35,15 @@ describe('WorkoutControls', () => {
   })
 
   it('renders both buttons', () => {
-    vi.mocked(useWorkoutState).mockReturnValue({
-      status: WorkoutStatus.IDLE,
-      isActive: false,
-      startTime: null,
-      endTime: null,
-      repCount: 0
-    })
+    vi.mocked(useWorkoutState).mockReturnValue(
+      createMockWorkoutStats({
+        status: WorkoutStatus.IDLE,
+        isActive: false,
+        startTime: null,
+        endTime: null,
+        repCount: 0
+      })
+    )
 
     render(<WorkoutControls videoRef={videoRef} canvasRef={canvasRef} />)
 
@@ -49,13 +52,15 @@ describe('WorkoutControls', () => {
   })
 
   it('shows stop when active', () => {
-    vi.mocked(useWorkoutState).mockReturnValue({
-      status: WorkoutStatus.ACTIVE,
-      isActive: true,
-      startTime: new Date(),
-      endTime: null,
-      repCount: 0
-    })
+    vi.mocked(useWorkoutState).mockReturnValue(
+      createMockWorkoutStats({
+        status: WorkoutStatus.ACTIVE,
+        isActive: true,
+        startTime: new Date(),
+        endTime: null,
+        repCount: 0
+      })
+    )
 
     render(<WorkoutControls videoRef={videoRef} canvasRef={canvasRef} />)
 
@@ -63,13 +68,15 @@ describe('WorkoutControls', () => {
   })
 
   it('disabled when starting', () => {
-    vi.mocked(useWorkoutState).mockReturnValue({
-      status: WorkoutStatus.IDLE,
-      isActive: false,
-      startTime: null,
-      endTime: null,
-      repCount: 0
-    })
+    vi.mocked(useWorkoutState).mockReturnValue(
+      createMockWorkoutStats({
+        status: WorkoutStatus.IDLE,
+        isActive: false,
+        startTime: null,
+        endTime: null,
+        repCount: 0
+      })
+    )
 
     vi.mocked(useWorkoutActions).mockReturnValue({
       isStarting: true,
@@ -92,13 +99,15 @@ describe('WorkoutControls', () => {
     videoRef.current = mockVideoElement
     canvasRef.current = mockCanvasElement
 
-    vi.mocked(useWorkoutState).mockReturnValue({
-      status: WorkoutStatus.IDLE,
-      isActive: false,
-      startTime: null,
-      endTime: null,
-      repCount: 0
-    })
+    vi.mocked(useWorkoutState).mockReturnValue(
+      createMockWorkoutStats({
+        status: WorkoutStatus.IDLE,
+        isActive: false,
+        startTime: null,
+        endTime: null,
+        repCount: 0
+      })
+    )
 
     vi.mocked(useWorkoutActions).mockReturnValue({
       isStarting: false,
@@ -118,13 +127,15 @@ describe('WorkoutControls', () => {
   it('calls stop on click', () => {
     const mockStopWorkout = vi.fn()
 
-    vi.mocked(useWorkoutState).mockReturnValue({
-      status: WorkoutStatus.ACTIVE,
-      isActive: true,
-      startTime: new Date(),
-      endTime: null,
-      repCount: 0
-    })
+    vi.mocked(useWorkoutState).mockReturnValue(
+      createMockWorkoutStats({
+        status: WorkoutStatus.ACTIVE,
+        isActive: true,
+        startTime: new Date(),
+        endTime: null,
+        repCount: 0
+      })
+    )
 
     vi.mocked(useWorkoutActions).mockReturnValue({
       isStarting: false,
@@ -142,13 +153,15 @@ describe('WorkoutControls', () => {
   })
 
   it('disables preview when workout active', () => {
-    vi.mocked(useWorkoutState).mockReturnValue({
-      status: WorkoutStatus.ACTIVE,
-      isActive: true,
-      startTime: new Date(),
-      endTime: null,
-      repCount: 0
-    })
+    vi.mocked(useWorkoutState).mockReturnValue(
+      createMockWorkoutStats({
+        status: WorkoutStatus.ACTIVE,
+        isActive: true,
+        startTime: new Date(),
+        endTime: null,
+        repCount: 0
+      })
+    )
 
     render(<WorkoutControls videoRef={videoRef} canvasRef={canvasRef} />)
 

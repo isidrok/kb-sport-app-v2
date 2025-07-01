@@ -3,6 +3,7 @@ import { renderHook, act } from '@testing-library/preact'
 import { useWorkoutState } from './use-workout-state'
 import { workoutService } from '@/application/services/workout.service'
 import { WorkoutStatus } from '@/domain/entities/workout-entity'
+import { createMockWorkoutStats } from '@/test-helpers/workout-stats-factory'
 
 const mockSubscribe = vi.fn()
 const mockUnsubscribe = vi.fn()
@@ -26,13 +27,13 @@ describe('useWorkoutState', () => {
   })
 
   it('returns current workout stats', () => {
-    const mockStats = {
+    const mockStats = createMockWorkoutStats({
       status: WorkoutStatus.IDLE,
       isActive: false,
       startTime: null,
       endTime: null,
       repCount: 0
-    }
+    })
     
     vi.mocked(workoutService.getWorkoutStatus).mockReturnValue(mockStats)
     mockSubscribe.mockReturnValue(mockUnsubscribe)
@@ -46,21 +47,21 @@ describe('useWorkoutState', () => {
   it('updates on workout events', () => {
     let mockListener: (event: any) => void = vi.fn()
     
-    const initialStats = {
+    const initialStats = createMockWorkoutStats({
       status: WorkoutStatus.IDLE,
       isActive: false,
       startTime: null,
       endTime: null,
       repCount: 0
-    }
+    })
     
-    const updatedStats = {
+    const updatedStats = createMockWorkoutStats({
       status: WorkoutStatus.ACTIVE,
       isActive: true,
       startTime: new Date(),
       endTime: null,
       repCount: 0
-    }
+    })
     
     vi.mocked(workoutService.getWorkoutStatus)
       .mockReturnValueOnce(initialStats)

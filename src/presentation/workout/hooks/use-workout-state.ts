@@ -13,6 +13,11 @@ const DEFAULT_STATS: WorkoutStats = {
   endTime: null,
   isActive: false,
   repCount: 0,
+  elapsedTime: 0,
+  formattedTime: "00:00",
+  averageRPM: 0,
+  currentRPM: 0,
+  reps: [],
 };
 
 export function useWorkoutState() {

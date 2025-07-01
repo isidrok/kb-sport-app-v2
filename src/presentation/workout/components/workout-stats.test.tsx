@@ -4,6 +4,7 @@ import { WorkoutStats } from './workout-stats'
 import { useWorkoutState } from '../hooks/use-workout-state'
 import { WorkoutStatus } from '@/domain/entities/workout-entity'
 import type { Mocked } from 'vitest'
+import { createMockWorkoutStats } from '@/test-helpers/workout-stats-factory'
 
 vi.mock('../hooks/use-workout-state')
 
@@ -11,13 +12,15 @@ const mockUseWorkoutState = useWorkoutState as Mocked<typeof useWorkoutState>
 
 describe('WorkoutStats', () => {
   beforeEach(() => {
-    vi.mocked(mockUseWorkoutState).mockReturnValue({
-      status: WorkoutStatus.ACTIVE,
-      startTime: new Date(),
-      endTime: null,
-      isActive: true,
-      repCount: 5
-    })
+    vi.mocked(mockUseWorkoutState).mockReturnValue(
+      createMockWorkoutStats({
+        status: WorkoutStatus.ACTIVE,
+        startTime: new Date(),
+        endTime: null,
+        isActive: true,
+        repCount: 5
+      })
+    )
   })
 
   it('renders rep count card', () => {
@@ -39,13 +42,15 @@ describe('WorkoutStats', () => {
     expect(screen.getByText('5')).toBeInTheDocument()
 
     // Simulate event-triggered state update with new rep count
-    vi.mocked(mockUseWorkoutState).mockReturnValue({
-      status: WorkoutStatus.ACTIVE,
-      startTime: new Date(),
-      endTime: null,
-      isActive: true,
-      repCount: 8
-    })
+    vi.mocked(mockUseWorkoutState).mockReturnValue(
+      createMockWorkoutStats({
+        status: WorkoutStatus.ACTIVE,
+        startTime: new Date(),
+        endTime: null,
+        isActive: true,
+        repCount: 8
+      })
+    )
 
     // Re-render to simulate hook state update
     rerender(<WorkoutStats />)
