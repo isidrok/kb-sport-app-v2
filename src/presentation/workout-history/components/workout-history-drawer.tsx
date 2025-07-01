@@ -1,47 +1,82 @@
-import { useEffect } from 'preact/hooks'
-import { WorkoutCard } from './workout-card'
-import { useWorkoutHistory } from '../../hooks/use-workout-history'
-import { Icon } from '@/presentation/components/icon'
-import styles from './workout-history-drawer.module.css'
+import { useEffect, useRef } from "preact/hooks";
+import { WorkoutCard } from "./workout-card";
+import { useWorkoutHistory } from "../../hooks/use-workout-history";
+import { Icon } from "@/presentation/components/icon";
+import styles from "./workout-history-drawer.module.css";
 
 interface WorkoutHistoryDrawerProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export function WorkoutHistoryDrawer({ isOpen, onClose }: WorkoutHistoryDrawerProps) {
-  const { workouts, isLoading, viewWorkout, downloadWorkout, deleteWorkout, deletingWorkoutId, confirmDelete, cancelDelete } = useWorkoutHistory()
+export function WorkoutHistoryDrawer({
+  isOpen,
+  onClose,
+}: WorkoutHistoryDrawerProps) {
+  const {
+    workouts,
+    isLoading,
+    loadWorkouts,
+    viewWorkout,
+    downloadWorkout,
+    deleteWorkout,
+    deletingWorkoutId,
+    confirmDelete,
+    cancelDelete,
+  } = useWorkoutHistory();
+
+  const previouslyOpen = useRef(false);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose()
+      if (event.key === "Escape") {
+        onClose();
       }
-    }
+    };
 
     if (isOpen) {
-      document.addEventListener('keydown', handleKeyDown)
+      document.addEventListener("keydown", handleKeyDown);
+      
+      // Only load workouts if drawer wasn't previously open
+      if (!previouslyOpen.current) {
+        loadWorkouts();
+      }
+      previouslyOpen.current = true;
+    } else {
+      previouslyOpen.current = false;
     }
 
     return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [isOpen, onClose])
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose, loadWorkouts]);
 
   if (!isOpen) {
-    return null
+    return null;
   }
 
   return (
-    <div className={styles.backdrop} data-testid="drawer-backdrop" onClick={onClose}>
-      <div role="dialog" className={styles.drawer} onClick={(e) => e.stopPropagation()}>
+    <div
+      className={styles.backdrop}
+      data-testid="drawer-backdrop"
+      onClick={onClose}
+    >
+      <div
+        role="dialog"
+        className={styles.drawer}
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className={styles.header}>
           <h2 className={styles.title}>Workout History</h2>
-          <button className={styles.closeButton} onClick={onClose} aria-label="Close">
+          <button
+            className={styles.closeButton}
+            onClick={onClose}
+            aria-label="Close"
+          >
             <Icon name="close" />
           </button>
         </div>
-        
+
         <div className={styles.content}>
           {isLoading ? (
             <div className={styles.loading}>
@@ -49,7 +84,9 @@ export function WorkoutHistoryDrawer({ isOpen, onClose }: WorkoutHistoryDrawerPr
                 <Icon name="hourglass_empty" />
               </div>
               <div className={styles.loadingText}>Loading workouts...</div>
-              <div className={styles.loadingSubtext}>Please wait while we fetch your workout history</div>
+              <div className={styles.loadingSubtext}>
+                Please wait while we fetch your workout history
+              </div>
             </div>
           ) : workouts.length === 0 ? (
             <div className={styles.empty}>
@@ -57,7 +94,9 @@ export function WorkoutHistoryDrawer({ isOpen, onClose }: WorkoutHistoryDrawerPr
                 <Icon name="fitness_center" />
               </div>
               <div className={styles.emptyText}>No workouts found</div>
-              <div className={styles.emptySubtext}>Start your first workout to see it here</div>
+              <div className={styles.emptySubtext}>
+                Start your first workout to see it here
+              </div>
             </div>
           ) : (
             <div className={styles.workoutList}>
@@ -78,5 +117,5 @@ export function WorkoutHistoryDrawer({ isOpen, onClose }: WorkoutHistoryDrawerPr
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -33,7 +33,7 @@ describe('useWorkoutHistory', () => {
     vi.resetAllMocks();
   });
 
-  it('test_loads_workouts_on_mount', async () => {
+  it('test_loads_workouts_manually', async () => {
     // Arrange
     const mockWorkouts: WorkoutSummary[] = [
       {
@@ -61,6 +61,13 @@ describe('useWorkoutHistory', () => {
     // Act
     const { result } = renderHook(() => useWorkoutHistory());
 
+    // Initially should not have loaded workouts
+    expect(result.current.workouts).toEqual([]);
+    expect(mockWorkoutStorageService.getStoredWorkouts).not.toHaveBeenCalled();
+
+    // Manually load workouts
+    await result.current.loadWorkouts();
+    
     // Assert
     expect(mockWorkoutStorageService.getStoredWorkouts).toHaveBeenCalledOnce();
     

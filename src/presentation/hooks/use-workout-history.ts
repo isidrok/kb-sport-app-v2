@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'preact/hooks';
+import { useState, useCallback } from 'preact/hooks';
 import { workoutStorageService } from '@/application/services/workout-storage.service';
 import { WorkoutSummary } from '@/domain/types/workout-storage.types';
 
@@ -6,6 +6,7 @@ export interface UseWorkoutHistoryReturn {
   workouts: WorkoutSummary[];
   isLoading: boolean;
   deletingWorkoutId: string | null;
+  loadWorkouts: () => Promise<void>;
   viewWorkout: (workoutId: string) => Promise<void>;
   downloadWorkout: (workoutId: string) => Promise<void>;
   deleteWorkout: (workoutId: string) => void;
@@ -18,16 +19,12 @@ export function useWorkoutHistory(): UseWorkoutHistoryReturn {
   const [isLoading, setIsLoading] = useState(false);
   const [deletingWorkoutId, setDeletingWorkoutId] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadWorkouts();
-  }, []);
-
-  async function loadWorkouts() {
+  const loadWorkouts = useCallback(async () => {
     setIsLoading(true);
     const storedWorkouts = await workoutStorageService.getStoredWorkouts();
     setWorkouts(storedWorkouts);
     setIsLoading(false);
-  }
+  }, []);
 
   async function viewWorkout(workoutId: string) {
     const videoBlob = await workoutStorageService.getWorkoutVideo(workoutId);
@@ -75,6 +72,7 @@ export function useWorkoutHistory(): UseWorkoutHistoryReturn {
     workouts,
     isLoading,
     deletingWorkoutId,
+    loadWorkouts,
     viewWorkout,
     downloadWorkout,
     deleteWorkout,

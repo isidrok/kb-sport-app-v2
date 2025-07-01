@@ -19,6 +19,7 @@ describe('WorkoutHistoryDrawer', () => {
       workouts: [],
       isLoading: false,
       deletingWorkoutId: null,
+      loadWorkouts: vi.fn(),
       viewWorkout: vi.fn(),
       downloadWorkout: vi.fn(),
       deleteWorkout: vi.fn(),
@@ -64,6 +65,7 @@ describe('WorkoutHistoryDrawer', () => {
         workouts: [],
         isLoading: true,
         deletingWorkoutId: null,
+        loadWorkouts: vi.fn(),
         viewWorkout: vi.fn(),
         downloadWorkout: vi.fn(),
         deleteWorkout: vi.fn(),
@@ -129,6 +131,33 @@ describe('WorkoutHistoryDrawer', () => {
 
       // Assert
       expect(mockOnClose).toHaveBeenCalled()
+    })
+
+    it('loads workouts when drawer opens', () => {
+      // Arrange
+      const mockLoadWorkouts = vi.fn()
+      mockUseWorkoutHistory.mockReturnValue({
+        workouts: [],
+        isLoading: false,
+        deletingWorkoutId: null,
+        loadWorkouts: mockLoadWorkouts,
+        viewWorkout: vi.fn(),
+        downloadWorkout: vi.fn(),
+        deleteWorkout: vi.fn(),
+        confirmDelete: vi.fn(),
+        cancelDelete: vi.fn()
+      })
+
+      // Act
+      render(
+        <WorkoutHistoryDrawer 
+          isOpen={true} 
+          onClose={mockOnClose} 
+        />
+      )
+
+      // Assert
+      expect(mockLoadWorkouts).toHaveBeenCalledOnce()
     })
   })
 })

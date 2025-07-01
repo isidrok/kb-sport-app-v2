@@ -43,6 +43,7 @@ describe('WorkoutControls', () => {
       workouts: [],
       isLoading: false,
       deletingWorkoutId: null,
+      loadWorkouts: vi.fn(),
       viewWorkout: vi.fn(),
       downloadWorkout: vi.fn(),
       deleteWorkout: vi.fn(),
