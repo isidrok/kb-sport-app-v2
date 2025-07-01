@@ -97,3 +97,6 @@ export class OPFSAdapter {
     return await fileHandle.createWritable();
   }
 }
+
+// Export singleton instance
+export const opfsAdapter = new OPFSAdapter()

@@ -38,3 +38,6 @@ export class VideoStreamWriter {
     return { sizeInBytes: this.totalSize };
   }
 }
+
+// Export singleton instance
+export const videoStreamWriter = new VideoStreamWriter()
