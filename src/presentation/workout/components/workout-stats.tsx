@@ -8,6 +8,9 @@ export function WorkoutStats() {
   return (
     <div className={styles.overlay}>
       <WorkoutStatsCard value={stats.repCount} label="Reps" />
+      <WorkoutStatsCard value={stats.formattedTime} label="Time" />
+      <WorkoutStatsCard value={`${stats.averageRPM} RPM`} label="Avg Speed" />
+      <WorkoutStatsCard value={`${stats.currentRPM} RPM`} label="Current Speed" />
     </div>
   )
 }
