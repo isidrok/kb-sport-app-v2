@@ -7,6 +7,7 @@ import { previewService } from '@/application/services/preview.service'
 import { WorkoutStatus } from '@/domain/entities/workout-entity'
 import { vi, beforeEach, afterEach, describe, it, expect } from 'vitest'
 import { createRef } from 'preact'
+import { createMockWorkoutStats } from '@/test-helpers/workout-stats-factory'
 
 vi.mock('./use-workout-state')
 vi.mock('@/application/services/workout.service')
@@ -73,13 +74,15 @@ describe('useFrameProcessing', () => {
   })
 
   it('starts frame processing when workout is active', () => {
-    mockUseWorkoutState.mockReturnValue({
-      status: WorkoutStatus.ACTIVE,
-      isActive: true,
-      startTime: new Date(),
-      endTime: null,
-      repCount: 0
-    })
+    mockUseWorkoutState.mockReturnValue(
+      createMockWorkoutStats({
+        status: WorkoutStatus.ACTIVE,
+        isActive: true,
+        startTime: new Date(),
+        endTime: null,
+        repCount: 0
+      })
+    )
 
     renderHook(() => useFrameProcessing(mockVideoRef, mockCanvasRef))
 
@@ -87,13 +90,15 @@ describe('useFrameProcessing', () => {
   })
 
   it('does not start frame processing when workout is idle', () => {
-    mockUseWorkoutState.mockReturnValue({
-      status: WorkoutStatus.IDLE,
-      isActive: false,
-      startTime: null,
-      endTime: null,
-      repCount: 0
-    })
+    mockUseWorkoutState.mockReturnValue(
+      createMockWorkoutStats({
+        status: WorkoutStatus.IDLE,
+        isActive: false,
+        startTime: null,
+        endTime: null,
+        repCount: 0
+      })
+    )
 
     renderHook(() => useFrameProcessing(mockVideoRef, mockCanvasRef))
 
@@ -101,13 +106,15 @@ describe('useFrameProcessing', () => {
   })
 
   it('calls workoutService.processFrame when elements exist and workout is active', () => {
-    mockUseWorkoutState.mockReturnValue({
-      status: WorkoutStatus.ACTIVE,
-      isActive: true,
-      startTime: new Date(),
-      endTime: null,
-      repCount: 0
-    })
+    mockUseWorkoutState.mockReturnValue(
+      createMockWorkoutStats({
+        status: WorkoutStatus.ACTIVE,
+        isActive: true,
+        startTime: new Date(),
+        endTime: null,
+        repCount: 0
+      })
+    )
 
     // Capture the frame processing function
     let frameProcessor: Function | undefined
@@ -131,13 +138,15 @@ describe('useFrameProcessing', () => {
 
   it('stops frame processing when workout status changes from active to stopped', () => {
     // Start with active workout
-    mockUseWorkoutState.mockReturnValue({
-      status: WorkoutStatus.ACTIVE,
-      isActive: true,
-      startTime: new Date(),
-      endTime: null,
-      repCount: 0
-    })
+    mockUseWorkoutState.mockReturnValue(
+      createMockWorkoutStats({
+        status: WorkoutStatus.ACTIVE,
+        isActive: true,
+        startTime: new Date(),
+        endTime: null,
+        repCount: 0
+      })
+    )
 
     const { rerender } = renderHook(() => useFrameProcessing(mockVideoRef, mockCanvasRef))
 
@@ -145,13 +154,15 @@ describe('useFrameProcessing', () => {
     expect(mockRequestAnimationFrame).toHaveBeenCalledWith(expect.any(Function))
     
     // Change workout status to stopped
-    mockUseWorkoutState.mockReturnValue({
-      status: WorkoutStatus.STOPPED,
-      isActive: false,
-      startTime: new Date(),
-      endTime: new Date(),
-      repCount: 0
-    })
+    mockUseWorkoutState.mockReturnValue(
+      createMockWorkoutStats({
+        status: WorkoutStatus.STOPPED,
+        isActive: false,
+        startTime: new Date(),
+        endTime: new Date(),
+        repCount: 0
+      })
+    )
     
     rerender()
 
@@ -160,13 +171,15 @@ describe('useFrameProcessing', () => {
   })
 
   it('cancels animation frame on cleanup', () => {
-    mockUseWorkoutState.mockReturnValue({
-      status: WorkoutStatus.ACTIVE,
-      isActive: true,
-      startTime: new Date(),
-      endTime: null,
-      repCount: 0
-    })
+    mockUseWorkoutState.mockReturnValue(
+      createMockWorkoutStats({
+        status: WorkoutStatus.ACTIVE,
+        isActive: true,
+        startTime: new Date(),
+        endTime: null,
+        repCount: 0
+      })
+    )
 
     const { unmount } = renderHook(() => useFrameProcessing(mockVideoRef, mockCanvasRef))
 
@@ -176,13 +189,15 @@ describe('useFrameProcessing', () => {
   })
 
   it('processes frames during preview mode', () => {
-    mockUseWorkoutState.mockReturnValue({
-      status: WorkoutStatus.IDLE,
-      isActive: false,
-      startTime: null,
-      endTime: null,
-      repCount: 0
-    })
+    mockUseWorkoutState.mockReturnValue(
+      createMockWorkoutStats({
+        status: WorkoutStatus.IDLE,
+        isActive: false,
+        startTime: null,
+        endTime: null,
+        repCount: 0
+      })
+    )
 
     mockUsePreview.mockReturnValue({
       isPreviewActive: true,
@@ -197,13 +212,15 @@ describe('useFrameProcessing', () => {
   })
 
   it('calls previewService.processFrame during preview', () => {
-    mockUseWorkoutState.mockReturnValue({
-      status: WorkoutStatus.IDLE,
-      isActive: false,
-      startTime: null,
-      endTime: null,
-      repCount: 0
-    })
+    mockUseWorkoutState.mockReturnValue(
+      createMockWorkoutStats({
+        status: WorkoutStatus.IDLE,
+        isActive: false,
+        startTime: null,
+        endTime: null,
+        repCount: 0
+      })
+    )
 
     mockUsePreview.mockReturnValue({
       isPreviewActive: true,
@@ -234,13 +251,15 @@ describe('useFrameProcessing', () => {
 
   it('stops processing when both workout and preview are inactive', () => {
     // Start with preview active
-    mockUseWorkoutState.mockReturnValue({
-      status: WorkoutStatus.IDLE,
-      isActive: false,
-      startTime: null,
-      endTime: null,
-      repCount: 0
-    })
+    mockUseWorkoutState.mockReturnValue(
+      createMockWorkoutStats({
+        status: WorkoutStatus.IDLE,
+        isActive: false,
+        startTime: null,
+        endTime: null,
+        repCount: 0
+      })
+    )
 
     mockUsePreview.mockReturnValue({
       isPreviewActive: true,

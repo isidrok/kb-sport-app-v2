@@ -2,6 +2,7 @@ import { WorkoutEntity, type WorkoutStats } from '@/domain/entities/workout-enti
 import { startWorkoutUseCase, type StartWorkoutUseCase } from '@/application/use-cases/start-workout-use-case'
 import { stopWorkoutUseCase, type StopWorkoutUseCase } from '@/application/use-cases/stop-workout-use-case'
 import { detectRepUseCase, type DetectRepUseCase } from '@/application/use-cases/detect-rep-use-case'
+import { workoutTimerUseCase, type WorkoutTimerUseCase } from '@/application/use-cases/workout-timer-use-case'
 import { poseService, type PoseService } from './pose.service'
 import { previewService, type PreviewService } from './preview.service'
 
@@ -9,6 +10,7 @@ interface WorkoutServiceDependencies {
   startWorkoutUseCase: StartWorkoutUseCase
   stopWorkoutUseCase: StopWorkoutUseCase
   detectRepUseCase: DetectRepUseCase
+  workoutTimerUseCase: WorkoutTimerUseCase
   poseService: PoseService
   previewService: PreviewService
 }
@@ -30,6 +32,7 @@ export class WorkoutService {
   private startWorkoutUseCase: StartWorkoutUseCase
   private stopWorkoutUseCase: StopWorkoutUseCase
   private detectRepUseCase: DetectRepUseCase
+  private workoutTimerUseCase: WorkoutTimerUseCase
   private poseService: PoseService
   private previewService: PreviewService
 
@@ -37,6 +40,7 @@ export class WorkoutService {
     this.startWorkoutUseCase = dependencies.startWorkoutUseCase
     this.stopWorkoutUseCase = dependencies.stopWorkoutUseCase
     this.detectRepUseCase = dependencies.detectRepUseCase
+    this.workoutTimerUseCase = dependencies.workoutTimerUseCase
     this.poseService = dependencies.poseService
     this.previewService = dependencies.previewService
   }
@@ -61,6 +65,7 @@ export class WorkoutService {
 
     await this.poseService.startPoseDetection(videoElement, canvasElement)
     this.startWorkoutUseCase.execute(this._currentWorkout!)
+    this.workoutTimerUseCase.start(this._currentWorkout!)
   }
 
   stopWorkout(canvasElement?: HTMLCanvasElement): void {
@@ -68,6 +73,7 @@ export class WorkoutService {
     
     this.poseService.stopPoseDetection(canvasElement)
     this.stopWorkoutUseCase.execute(this._currentWorkout, canvasElement)
+    this.workoutTimerUseCase.stop()
   }
 
   processFrame(videoElement: HTMLVideoElement, canvasElement: HTMLCanvasElement): void {
@@ -101,6 +107,7 @@ export const workoutService = new WorkoutService({
   startWorkoutUseCase,
   stopWorkoutUseCase,
   detectRepUseCase,
+  workoutTimerUseCase,
   poseService,
   previewService
 })

@@ -5,6 +5,7 @@ import { useModelLoading } from '../hooks/use-model-loading'
 import { useFrameProcessing } from './hooks/use-frame-processing'
 import { useWorkoutState } from './hooks/use-workout-state'
 import { WorkoutStatus } from '@/domain/entities/workout-entity'
+import { createMockWorkoutStats } from '@/test-helpers/workout-stats-factory'
 
 vi.mock('../hooks/use-model-loading')
 vi.mock('./hooks/use-frame-processing')
@@ -23,13 +24,15 @@ describe('WorkoutPage', () => {
     
     mockUseFrameProcessing.mockReturnValue(undefined)
     
-    mockUseWorkoutState.mockReturnValue({
-      status: WorkoutStatus.ACTIVE,
-      startTime: new Date(),
-      endTime: null,
-      isActive: true,
-      repCount: 3
-    })
+    mockUseWorkoutState.mockReturnValue(
+      createMockWorkoutStats({
+        status: WorkoutStatus.ACTIVE,
+        startTime: new Date(),
+        endTime: null,
+        isActive: true,
+        repCount: 3
+      })
+    )
   })
 
   it('renders workout stats component', () => {

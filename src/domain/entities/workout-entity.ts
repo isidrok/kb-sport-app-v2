@@ -13,6 +13,11 @@ export interface WorkoutStats {
   endTime: Date | null;
   isActive: boolean;
   repCount: number;
+  elapsedTime: number;
+  formattedTime: string;
+  averageRPM: number;
+  currentRPM: number;
+  reps: Rep[];
 }
 
 /**
@@ -97,13 +102,92 @@ export class WorkoutEntity {
     });
   }
 
+  private getElapsedTime(): number {
+    if (this._status === WorkoutStatus.IDLE || !this._startTime) {
+      return 0;
+    }
+    
+    if (this._status === WorkoutStatus.ACTIVE) {
+      return Date.now() - this._startTime.getTime();
+    }
+    
+    if (this._status === WorkoutStatus.STOPPED && this._endTime) {
+      return this._endTime.getTime() - this._startTime.getTime();
+    }
+    
+    return 0;
+  }
+
+  private getFormattedTime(): string {
+    const elapsedMs = this.getElapsedTime();
+    const totalSeconds = Math.floor(elapsedMs / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+
+  private getAverageRPM(): number {
+    if (this._reps.length === 0 || this._status === WorkoutStatus.IDLE) {
+      return 0;
+    }
+    
+    const elapsedMs = this.getElapsedTime();
+    if (elapsedMs === 0) {
+      return 0;
+    }
+    
+    const elapsedMinutes = elapsedMs / 60000;
+    return Math.round(this._reps.length / elapsedMinutes);
+  }
+
+  private getCurrentRPM(windowSeconds: number = 20): number {
+    if (this._reps.length === 0 || this._status === WorkoutStatus.IDLE) {
+      return 0;
+    }
+    
+    const now = Date.now();
+    const windowStart = now - (windowSeconds * 1000);
+    
+    // Filter reps within the window
+    const repsInWindow = this._reps.filter(rep => 
+      rep.timestamp.getTime() >= windowStart
+    );
+    
+    if (repsInWindow.length === 0) {
+      return 0;
+    }
+    
+    // Calculate actual window duration
+    // If workout started less than windowSeconds ago, use time since start
+    const actualWindowStart = Math.max(windowStart, this._startTime!.getTime());
+    const windowDurationMs = now - actualWindowStart;
+    
+    if (windowDurationMs === 0) {
+      return 0;
+    }
+    
+    const windowMinutes = windowDurationMs / 60000;
+    return Math.round(repsInWindow.length / windowMinutes);
+  }
+
   getStats(): WorkoutStats {
+    const elapsedTime = this.getElapsedTime();
+    const formattedTime = this.getFormattedTime();
+    const averageRPM = this.getAverageRPM();
+    const currentRPM = this.getCurrentRPM();
+    
     return {
       status: this._status,
       startTime: this._startTime,
       endTime: this._endTime,
       isActive: this.isActive(),
       repCount: this.getRepCount(),
+      elapsedTime,
+      formattedTime,
+      averageRPM,
+      currentRPM,
+      reps: this._reps,
     };
   }
 }

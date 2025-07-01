@@ -3,6 +3,7 @@ import { WorkoutService } from './workout.service'
 import { StartWorkoutUseCase } from '@/application/use-cases/start-workout-use-case'
 import { StopWorkoutUseCase } from '@/application/use-cases/stop-workout-use-case'
 import { DetectRepUseCase } from '@/application/use-cases/detect-rep-use-case'
+import { WorkoutTimerUseCase } from '@/application/use-cases/workout-timer-use-case'
 import type { PoseService } from './pose.service'
 import type { PreviewService } from './preview.service'
 import { type Prediction } from '@/domain/types/rep-detection.types'
@@ -10,12 +11,14 @@ import { type Prediction } from '@/domain/types/rep-detection.types'
 vi.mock('@/application/use-cases/start-workout-use-case')
 vi.mock('@/application/use-cases/stop-workout-use-case')
 vi.mock('@/application/use-cases/detect-rep-use-case')
+vi.mock('@/application/use-cases/workout-timer-use-case')
 
 describe('WorkoutService', () => {
   let workoutService: WorkoutService
   let mockStartWorkoutUseCase: Mocked<StartWorkoutUseCase>
   let mockStopWorkoutUseCase: Mocked<StopWorkoutUseCase>
   let mockDetectRepUseCase: Mocked<DetectRepUseCase>
+  let mockWorkoutTimerUseCase: Mocked<WorkoutTimerUseCase>
   let mockPoseService: Mocked<PoseService>
   let mockPreviewService: Mocked<PreviewService>
 
@@ -32,6 +35,11 @@ describe('WorkoutService', () => {
     mockDetectRepUseCase = {
       execute: vi.fn()
     } as Partial<DetectRepUseCase> as Mocked<DetectRepUseCase>
+
+    mockWorkoutTimerUseCase = {
+      start: vi.fn(),
+      stop: vi.fn()
+    } as Partial<WorkoutTimerUseCase> as Mocked<WorkoutTimerUseCase>
 
     mockPoseService = {
       startPoseDetection: vi.fn(),
@@ -51,6 +59,7 @@ describe('WorkoutService', () => {
       startWorkoutUseCase: mockStartWorkoutUseCase,
       stopWorkoutUseCase: mockStopWorkoutUseCase,
       detectRepUseCase: mockDetectRepUseCase,
+      workoutTimerUseCase: mockWorkoutTimerUseCase,
       poseService: mockPoseService,
       previewService: mockPreviewService
     })
@@ -112,7 +121,12 @@ describe('WorkoutService', () => {
       startTime: null,
       endTime: null,
       isActive: false,
-      repCount: 0
+      repCount: 0,
+      elapsedTime: 0,
+      formattedTime: '00:00',
+      averageRPM: 0,
+      currentRPM: 0,
+      reps: []
     })
   })
 
@@ -249,5 +263,49 @@ describe('WorkoutService', () => {
       prediction: mockPrediction,
       workout: workout
     })
+  })
+
+  it('starts timer on workout start', async () => {
+    const mockVideo = {} as HTMLVideoElement
+    const mockCanvas = {} as HTMLCanvasElement
+
+    await workoutService.startWorkout(mockVideo, mockCanvas)
+
+    const workout = workoutService.currentWorkout
+    expect(workout).toBeDefined()
+    expect(mockWorkoutTimerUseCase.start).toHaveBeenCalledWith(workout)
+  })
+
+  it('stops timer on workout stop', () => {
+    workoutService.createWorkout()
+    const mockCanvas = {} as HTMLCanvasElement
+
+    workoutService.stopWorkout(mockCanvas)
+
+    expect(mockWorkoutTimerUseCase.stop).toHaveBeenCalled()
+  })
+
+  it('workout stats include all metrics', () => {
+    vi.useFakeTimers()
+    
+    try {
+      const workout = workoutService.createWorkout()
+      workout.start()
+      
+      // Advance time to see elapsed time
+      vi.advanceTimersByTime(65000) // 1 minute 5 seconds
+      
+      const stats = workoutService.getWorkoutStatus()
+      
+      expect(stats).toBeDefined()
+      expect(stats?.elapsedTime).toBeGreaterThan(0)
+      expect(stats?.formattedTime).toBe('01:05')
+      expect(stats?.averageRPM).toBe(0)
+      expect(stats?.currentRPM).toBe(0)
+      expect(stats?.reps).toEqual([])
+      expect(stats?.repCount).toBe(0)
+    } finally {
+      vi.useRealTimers()
+    }
   })
 })
