@@ -1,5 +1,4 @@
 import { useEffect } from 'preact/hooks'
-import { WorkoutSummary } from '@/domain/types/workout-storage.types'
 import { WorkoutCard } from './workout-card'
 import { useWorkoutHistory } from '../../hooks/use-workout-history'
 import { Icon } from '@/presentation/components/icon'
@@ -8,12 +7,10 @@ import styles from './workout-history-drawer.module.css'
 interface WorkoutHistoryDrawerProps {
   isOpen: boolean
   onClose: () => void
-  workouts: WorkoutSummary[]
-  isLoading: boolean
 }
 
-export function WorkoutHistoryDrawer({ isOpen, onClose, workouts, isLoading }: WorkoutHistoryDrawerProps) {
-  const { viewWorkout, downloadWorkout, deleteWorkout } = useWorkoutHistory()
+export function WorkoutHistoryDrawer({ isOpen, onClose }: WorkoutHistoryDrawerProps) {
+  const { workouts, isLoading, viewWorkout, downloadWorkout, deleteWorkout, deletingWorkoutId, confirmDelete, cancelDelete } = useWorkoutHistory()
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -71,6 +68,9 @@ export function WorkoutHistoryDrawer({ isOpen, onClose, workouts, isLoading }: W
                   onView={viewWorkout}
                   onDownload={downloadWorkout}
                   onDelete={deleteWorkout}
+                  isDeleting={deletingWorkoutId === workout.workoutId}
+                  onConfirmDelete={confirmDelete}
+                  onCancelDelete={cancelDelete}
                 />
               ))}
             </div>

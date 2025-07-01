@@ -171,7 +171,7 @@ describe('useWorkoutHistory', () => {
 
     // Assert - wait for state update
     await vi.waitFor(() => {
-      expect(result.current.selectedWorkout).toEqual(mockWorkout);
+      expect(result.current.deletingWorkoutId).toBe(workoutId);
     });
   });
 
@@ -204,13 +204,13 @@ describe('useWorkoutHistory', () => {
     // Set up for deletion by calling deleteWorkout first
     result.current.deleteWorkout(workoutId);
     
-    // Wait for selectedWorkout to be set
+    // Wait for deletingWorkoutId to be set
     await vi.waitFor(() => {
-      expect(result.current.selectedWorkout).toEqual(mockWorkout);
+      expect(result.current.deletingWorkoutId).toBe(workoutId);
     });
 
     // Act - confirm the deletion
-    await result.current.confirmDelete();
+    await result.current.confirmDelete(workoutId);
 
     // Assert
     expect(mockWorkoutStorageService.deleteWorkout).toHaveBeenCalledWith(workoutId);
@@ -220,7 +220,7 @@ describe('useWorkoutHistory', () => {
       expect(result.current.workouts).toHaveLength(0);
     });
     
-    expect(result.current.selectedWorkout).toBeNull();
+    expect(result.current.deletingWorkoutId).toBeNull();
   });
 
   it.skip('test_handles_loading_states', async () => {

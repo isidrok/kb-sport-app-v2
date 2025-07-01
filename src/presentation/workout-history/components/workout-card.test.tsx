@@ -8,6 +8,8 @@ describe('WorkoutCard', () => {
   let mockOnView: () => void
   let mockOnDownload: () => void
   let mockOnDelete: () => void
+  let mockOnConfirmDelete: () => void
+  let mockOnCancelDelete: () => void
 
   beforeEach(() => {
     mockWorkout = {
@@ -23,6 +25,8 @@ describe('WorkoutCard', () => {
     mockOnView = vi.fn()
     mockOnDownload = vi.fn()
     mockOnDelete = vi.fn()
+    mockOnConfirmDelete = vi.fn()
+    mockOnCancelDelete = vi.fn()
   })
 
   describe('display', () => {
@@ -34,6 +38,8 @@ describe('WorkoutCard', () => {
           onView={mockOnView}
           onDownload={mockOnDownload}
           onDelete={mockOnDelete}
+          onConfirmDelete={mockOnConfirmDelete}
+          onCancelDelete={mockOnCancelDelete}
         />
       )
 
@@ -53,6 +59,8 @@ describe('WorkoutCard', () => {
           onView={mockOnView}
           onDownload={mockOnDownload}
           onDelete={mockOnDelete}
+          onConfirmDelete={mockOnConfirmDelete}
+          onCancelDelete={mockOnCancelDelete}
         />
       )
 
@@ -68,6 +76,8 @@ describe('WorkoutCard', () => {
           onView={mockOnView}
           onDownload={mockOnDownload}
           onDelete={mockOnDelete}
+          onConfirmDelete={mockOnConfirmDelete}
+          onCancelDelete={mockOnCancelDelete}
         />
       )
 
@@ -87,6 +97,8 @@ describe('WorkoutCard', () => {
           onView={mockOnView}
           onDownload={mockOnDownload}
           onDelete={mockOnDelete}
+          onConfirmDelete={mockOnConfirmDelete}
+          onCancelDelete={mockOnCancelDelete}
         />
       )
 
@@ -105,6 +117,8 @@ describe('WorkoutCard', () => {
           onView={mockOnView}
           onDownload={mockOnDownload}
           onDelete={mockOnDelete}
+          onConfirmDelete={mockOnConfirmDelete}
+          onCancelDelete={mockOnCancelDelete}
         />
       )
 
@@ -123,6 +137,8 @@ describe('WorkoutCard', () => {
           onView={mockOnView}
           onDownload={mockOnDownload}
           onDelete={mockOnDelete}
+          onConfirmDelete={mockOnConfirmDelete}
+          onCancelDelete={mockOnCancelDelete}
         />
       )
 
@@ -131,6 +147,71 @@ describe('WorkoutCard', () => {
 
       // Assert
       expect(mockOnDelete).toHaveBeenCalledWith('workout_2024-07-01T10:30:00.000Z')
+    })
+  })
+
+  describe('delete confirmation', () => {
+    it('shows confirmation dialog when deleting', () => {
+      // Arrange & Act
+      render(
+        <WorkoutCard 
+          workout={mockWorkout}
+          onView={mockOnView}
+          onDownload={mockOnDownload}
+          onDelete={mockOnDelete}
+          onConfirmDelete={mockOnConfirmDelete}
+          onCancelDelete={mockOnCancelDelete}
+          isDeleting={true}
+        />
+      )
+
+      // Assert
+      expect(screen.getByText('Delete Workout?')).toBeInTheDocument()
+      expect(screen.getByText('Are you sure you want to delete this workout?')).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Delete' })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: 'Cancel' })).toBeInTheDocument()
+    })
+
+    it('triggers confirm delete callback on confirm click', () => {
+      // Arrange
+      render(
+        <WorkoutCard 
+          workout={mockWorkout}
+          onView={mockOnView}
+          onDownload={mockOnDownload}
+          onDelete={mockOnDelete}
+          onConfirmDelete={mockOnConfirmDelete}
+          onCancelDelete={mockOnCancelDelete}
+          isDeleting={true}
+        />
+      )
+
+      // Act
+      fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+
+      // Assert
+      expect(mockOnConfirmDelete).toHaveBeenCalledWith('workout_2024-07-01T10:30:00.000Z')
+    })
+
+    it('triggers cancel delete callback on cancel click', () => {
+      // Arrange
+      render(
+        <WorkoutCard 
+          workout={mockWorkout}
+          onView={mockOnView}
+          onDownload={mockOnDownload}
+          onDelete={mockOnDelete}
+          onConfirmDelete={mockOnConfirmDelete}
+          onCancelDelete={mockOnCancelDelete}
+          isDeleting={true}
+        />
+      )
+
+      // Act
+      fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+
+      // Assert
+      expect(mockOnCancelDelete).toHaveBeenCalledOnce()
     })
   })
 })

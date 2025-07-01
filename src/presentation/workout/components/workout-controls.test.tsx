@@ -42,7 +42,7 @@ describe('WorkoutControls', () => {
     vi.mocked(useWorkoutHistory).mockReturnValue({
       workouts: [],
       isLoading: false,
-      selectedWorkout: null,
+      deletingWorkoutId: null,
       viewWorkout: vi.fn(),
       downloadWorkout: vi.fn(),
       deleteWorkout: vi.fn(),

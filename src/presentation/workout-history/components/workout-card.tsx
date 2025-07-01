@@ -8,6 +8,9 @@ interface WorkoutCardProps {
   onView: (workoutId: string) => void;
   onDownload: (workoutId: string) => void;
   onDelete: (workoutId: string) => void;
+  isDeleting?: boolean;
+  onConfirmDelete: (workoutId: string) => void;
+  onCancelDelete: () => void;
 }
 
 export function WorkoutCard({
@@ -15,28 +18,63 @@ export function WorkoutCard({
   onView,
   onDownload,
   onDelete,
+  isDeleting = false,
+  onConfirmDelete,
+  onCancelDelete,
 }: WorkoutCardProps) {
   // Calculate workout duration
-  const duration = workout.endTime 
-    ? Math.round((new Date(workout.endTime).getTime() - new Date(workout.startTime).getTime()) / 1000 / 60)
+  const duration = workout.endTime
+    ? Math.round(
+        (new Date(workout.endTime).getTime() -
+          new Date(workout.startTime).getTime()) /
+          1000 /
+          60
+      )
     : 0;
+
+  if (isDeleting) {
+    return (
+      <div className={`${styles.card} ${styles.deleteConfirmation}`}>
+        <div className={styles.deleteMessage}>
+          <Icon name="warning" className={styles.warningIcon} />
+          <h3>Delete Workout?</h3>
+          <p>Are you sure you want to delete this workout?</p>
+          <div className={styles.workoutInfo}>
+            <div>{formatDateTime(workout.startTime)}</div>
+            <div>{workout.videoSizeInMB.toFixed(1)} MB</div>
+          </div>
+        </div>
+        
+        <div className={styles.confirmActions}>
+          <button
+            className={`${styles.actionButton} ${styles.confirmButton}`}
+            onClick={() => onConfirmDelete(workout.workoutId)}
+          >
+            <Icon name="delete" className={styles.buttonIcon} />
+            Delete
+          </button>
+          <button
+            className={`${styles.actionButton} ${styles.cancelButton}`}
+            onClick={onCancelDelete}
+          >
+            <Icon name="close" className={styles.buttonIcon} />
+            Cancel
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.card}>
       <div className={styles.videoSize}>
         {workout.videoSizeInMB.toFixed(1)} MB
       </div>
-      
+
       <div className={styles.header}>
-        <div className={styles.date}>
-          {formatDateTime(workout.startTime)}
-        </div>
-        <div className={styles.duration}>
-          <Icon name="schedule" />
-          {duration}m
-        </div>
+        <div className={styles.date}>{formatDateTime(workout.startTime)}</div>
       </div>
-      
+
       <div className={styles.stats}>
         <div className={styles.stat}>
           <div className={styles.statValue}>{workout.totalReps}</div>
@@ -51,23 +89,23 @@ export function WorkoutCard({
           <div className={styles.statLabel}>Min</div>
         </div>
       </div>
-      
+
       <div className={styles.actions}>
-        <button 
+        <button
           className={`${styles.actionButton} ${styles.viewButton}`}
           onClick={() => onView(workout.workoutId)}
         >
           <Icon name="play_arrow" className={styles.buttonIcon} />
           View
         </button>
-        <button 
+        <button
           className={`${styles.actionButton} ${styles.downloadButton}`}
           onClick={() => onDownload(workout.workoutId)}
         >
           <Icon name="download" className={styles.buttonIcon} />
           Download
         </button>
-        <button 
+        <button
           className={`${styles.actionButton} ${styles.deleteButton}`}
           onClick={() => onDelete(workout.workoutId)}
         >

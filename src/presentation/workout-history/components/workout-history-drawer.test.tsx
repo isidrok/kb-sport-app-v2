@@ -2,11 +2,29 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/preact'
 import { WorkoutHistoryDrawer } from './workout-history-drawer'
 
+// Mock the useWorkoutHistory hook
+vi.mock('../../hooks/use-workout-history')
+
+import { useWorkoutHistory } from '../../hooks/use-workout-history'
+
 describe('WorkoutHistoryDrawer', () => {
   let mockOnClose: () => void
+  const mockUseWorkoutHistory = vi.mocked(useWorkoutHistory)
 
   beforeEach(() => {
     mockOnClose = vi.fn()
+    
+    // Default mock return value
+    mockUseWorkoutHistory.mockReturnValue({
+      workouts: [],
+      isLoading: false,
+      deletingWorkoutId: null,
+      viewWorkout: vi.fn(),
+      downloadWorkout: vi.fn(),
+      deleteWorkout: vi.fn(),
+      confirmDelete: vi.fn(),
+      cancelDelete: vi.fn()
+    })
   })
 
   describe('rendering', () => {
@@ -16,8 +34,6 @@ describe('WorkoutHistoryDrawer', () => {
         <WorkoutHistoryDrawer 
           isOpen={false} 
           onClose={mockOnClose} 
-          workouts={[]} 
-          isLoading={false} 
         />
       )
 
@@ -32,8 +48,6 @@ describe('WorkoutHistoryDrawer', () => {
         <WorkoutHistoryDrawer 
           isOpen={true} 
           onClose={mockOnClose} 
-          workouts={[]} 
-          isLoading={false} 
         />
       )
 
@@ -45,13 +59,23 @@ describe('WorkoutHistoryDrawer', () => {
     })
 
     it('displays loading while fetching workouts', () => {
-      // Arrange & Act
+      // Arrange
+      mockUseWorkoutHistory.mockReturnValue({
+        workouts: [],
+        isLoading: true,
+        deletingWorkoutId: null,
+        viewWorkout: vi.fn(),
+        downloadWorkout: vi.fn(),
+        deleteWorkout: vi.fn(),
+        confirmDelete: vi.fn(),
+        cancelDelete: vi.fn()
+      })
+
+      // Act
       render(
         <WorkoutHistoryDrawer 
           isOpen={true} 
           onClose={mockOnClose} 
-          workouts={[]} 
-          isLoading={true} 
         />
       )
 
@@ -65,8 +89,6 @@ describe('WorkoutHistoryDrawer', () => {
         <WorkoutHistoryDrawer 
           isOpen={true} 
           onClose={mockOnClose} 
-          workouts={[]} 
-          isLoading={false} 
         />
       )
 
@@ -82,8 +104,6 @@ describe('WorkoutHistoryDrawer', () => {
         <WorkoutHistoryDrawer 
           isOpen={true} 
           onClose={mockOnClose} 
-          workouts={[]} 
-          isLoading={false} 
         />
       )
 
@@ -101,8 +121,6 @@ describe('WorkoutHistoryDrawer', () => {
         <WorkoutHistoryDrawer 
           isOpen={true} 
           onClose={mockOnClose} 
-          workouts={[]} 
-          isLoading={false} 
         />
       )
 

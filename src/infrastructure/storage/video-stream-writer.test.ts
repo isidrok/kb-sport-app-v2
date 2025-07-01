@@ -21,6 +21,7 @@ describe('VideoStreamWriter', () => {
     } as unknown as FileSystemWritableFileStream;
     
     writer = new VideoStreamWriter();
+    vi.clearAllMocks();
   });
 
   it('creates media recorder with video settings', async () => {
@@ -68,10 +69,19 @@ describe('VideoStreamWriter', () => {
     const event = { data: blob };
     await mockRecorder.ondataavailable(event);
     
-    const result = await writer.stopRecording();
+    // Mock the stop event behavior
+    const stopPromise = writer.stopRecording();
+    
+    // Simulate the onstop event being triggered
+    if (mockRecorder.onstop) {
+      await mockRecorder.onstop();
+    }
+    
+    const result = await stopPromise;
     
     expect(result).toEqual({ sizeInBytes: expect.any(Number) });
     expect(mockFileWriter.close).toHaveBeenCalled();
+    expect(mockRecorder.stop).toHaveBeenCalled();
   });
 
   it('handles mediastream ended', async () => {
@@ -101,5 +111,11 @@ describe('VideoStreamWriter', () => {
       mimeType: settings.type,
       videoBitsPerSecond: settings.bitrate
     });
+  });
+
+  it('throws error when stopping without starting', async () => {
+    await expect(writer.stopRecording()).rejects.toThrow(
+      'MediaRecorder is not initialized. Call startRecording first.'
+    );
   });
 });

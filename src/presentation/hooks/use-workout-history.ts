@@ -5,18 +5,18 @@ import { WorkoutSummary } from '@/domain/types/workout-storage.types';
 export interface UseWorkoutHistoryReturn {
   workouts: WorkoutSummary[];
   isLoading: boolean;
-  selectedWorkout: WorkoutSummary | null;
+  deletingWorkoutId: string | null;
   viewWorkout: (workoutId: string) => Promise<void>;
   downloadWorkout: (workoutId: string) => Promise<void>;
   deleteWorkout: (workoutId: string) => void;
-  confirmDelete: () => Promise<void>;
+  confirmDelete: (workoutId: string) => Promise<void>;
   cancelDelete: () => void;
 }
 
 export function useWorkoutHistory(): UseWorkoutHistoryReturn {
   const [workouts, setWorkouts] = useState<WorkoutSummary[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedWorkout, setSelectedWorkout] = useState<WorkoutSummary | null>(null);
+  const [deletingWorkoutId, setDeletingWorkoutId] = useState<string | null>(null);
 
   useEffect(() => {
     loadWorkouts();
@@ -53,26 +53,28 @@ export function useWorkoutHistory(): UseWorkoutHistoryReturn {
   }
 
   function deleteWorkout(workoutId: string) {
-    const workout = workouts.find(w => w.workoutId === workoutId);
-    setSelectedWorkout(workout || null);
+    setDeletingWorkoutId(workoutId);
   }
 
-  async function confirmDelete() {
-    if (!selectedWorkout) return;
-    
-    await workoutStorageService.deleteWorkout(selectedWorkout.workoutId);
-    setSelectedWorkout(null);
-    await loadWorkouts();
+  async function confirmDelete(workoutId: string) {
+    try {
+      await workoutStorageService.deleteWorkout(workoutId);
+      setDeletingWorkoutId(null);
+      await loadWorkouts();
+    } catch (error) {
+      console.error('Failed to delete workout:', error);
+      setDeletingWorkoutId(null);
+    }
   }
 
   function cancelDelete() {
-    setSelectedWorkout(null);
+    setDeletingWorkoutId(null);
   }
 
   return {
     workouts,
     isLoading,
-    selectedWorkout,
+    deletingWorkoutId,
     viewWorkout,
     downloadWorkout,
     deleteWorkout,
