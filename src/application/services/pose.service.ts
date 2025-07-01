@@ -28,6 +28,7 @@ export class PoseService {
   private processFrameUseCase: ProcessFrameUseCase
   private rendererAdapter: PredictionRendererAdapter
   private _isActive: boolean = false
+  private _currentStream: MediaStream | null = null
 
   constructor(dependencies: PoseServiceDependencies) {
     this.startCameraUseCase = dependencies.startCameraUseCase
@@ -47,7 +48,7 @@ export class PoseService {
 
     // Only start camera if not already active (for seamless preview->workout transition)
     if (!this._isActive) {
-      await this.startCameraUseCase.execute(videoElement)
+      this._currentStream = await this.startCameraUseCase.execute(videoElement)
     }
     
     this._isActive = true
@@ -56,6 +57,7 @@ export class PoseService {
   stopPoseDetection(canvasElement?: HTMLCanvasElement): void {
     this.stopCameraUseCase.execute()
     this._isActive = false
+    this._currentStream = null
     
     if (canvasElement) {
       this.rendererAdapter.clear(canvasElement)
@@ -68,6 +70,10 @@ export class PoseService {
 
   isActive(): boolean {
     return this._isActive
+  }
+
+  getMediaStream(): MediaStream | null {
+    return this._currentStream
   }
 }
 

@@ -6,6 +6,7 @@ import { DetectRepUseCase } from '@/application/use-cases/detect-rep-use-case'
 import { WorkoutTimerUseCase } from '@/application/use-cases/workout-timer-use-case'
 import type { PoseService } from './pose.service'
 import type { PreviewService } from './preview.service'
+import type { WorkoutStorageService } from './workout-storage.service'
 import { type Prediction } from '@/domain/types/rep-detection.types'
 
 vi.mock('@/application/use-cases/start-workout-use-case')
@@ -21,6 +22,7 @@ describe('WorkoutService', () => {
   let mockWorkoutTimerUseCase: Mocked<WorkoutTimerUseCase>
   let mockPoseService: Mocked<PoseService>
   let mockPreviewService: Mocked<PreviewService>
+  let mockWorkoutStorageService: Mocked<WorkoutStorageService>
 
   beforeEach(() => {
     mockStartWorkoutUseCase = {
@@ -45,7 +47,8 @@ describe('WorkoutService', () => {
       startPoseDetection: vi.fn(),
       stopPoseDetection: vi.fn(),
       processFrame: vi.fn().mockReturnValue(null),
-      isActive: vi.fn().mockReturnValue(false)
+      isActive: vi.fn().mockReturnValue(false),
+      getMediaStream: vi.fn().mockReturnValue(null)
     } as Partial<PoseService> as Mocked<PoseService>
 
     mockPreviewService = {
@@ -55,13 +58,22 @@ describe('WorkoutService', () => {
       isPreviewActive: vi.fn().mockReturnValue(false)
     } as Partial<PreviewService> as Mocked<PreviewService>
 
+    mockWorkoutStorageService = {
+      startVideoRecording: vi.fn(),
+      stopRecording: vi.fn(),
+      getStoredWorkouts: vi.fn(),
+      getWorkoutVideo: vi.fn(),
+      deleteWorkout: vi.fn()
+    } as Partial<WorkoutStorageService> as Mocked<WorkoutStorageService>
+
     workoutService = new WorkoutService({
       startWorkoutUseCase: mockStartWorkoutUseCase,
       stopWorkoutUseCase: mockStopWorkoutUseCase,
       detectRepUseCase: mockDetectRepUseCase,
       workoutTimerUseCase: mockWorkoutTimerUseCase,
       poseService: mockPoseService,
-      previewService: mockPreviewService
+      previewService: mockPreviewService,
+      workoutStorageService: mockWorkoutStorageService
     })
   })
 

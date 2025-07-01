@@ -16,7 +16,7 @@ describe('PoseService', () => {
 
   beforeEach(() => {
     mockStartCameraUseCase = {
-      execute: vi.fn()
+      execute: vi.fn().mockResolvedValue({} as MediaStream)
     } as Partial<StartCameraUseCase> as Mocked<StartCameraUseCase>
 
     mockStopCameraUseCase = {
@@ -110,5 +110,35 @@ describe('PoseService', () => {
     await poseService.startPoseDetection(mockVideoElement, mockCanvasElement)
     expect(mockStartCameraUseCase.execute).toHaveBeenCalledTimes(1) // Still only called once
     expect(poseService.isActive()).toBe(true)
+  })
+
+  it('stores and provides access to media stream', async () => {
+    const mockStream = {} as MediaStream
+    mockStartCameraUseCase.execute.mockResolvedValue(mockStream)
+
+    // Initially no stream
+    expect(poseService.getMediaStream()).toBeNull()
+
+    // After starting, stream should be available
+    await poseService.startPoseDetection(mockVideoElement, mockCanvasElement)
+    expect(poseService.getMediaStream()).toBe(mockStream)
+
+    // After stopping, stream should be cleared
+    poseService.stopPoseDetection()
+    expect(poseService.getMediaStream()).toBeNull()
+  })
+
+  it('maintains stream during seamless transitions', async () => {
+    const mockStream = {} as MediaStream
+    mockStartCameraUseCase.execute.mockResolvedValue(mockStream)
+
+    // Start first session
+    await poseService.startPoseDetection(mockVideoElement, mockCanvasElement)
+    expect(poseService.getMediaStream()).toBe(mockStream)
+
+    // Start again without stopping (seamless transition)
+    await poseService.startPoseDetection(mockVideoElement, mockCanvasElement)
+    expect(poseService.getMediaStream()).toBe(mockStream) // Stream should persist
+    expect(mockStartCameraUseCase.execute).toHaveBeenCalledTimes(1) // Camera not restarted
   })
 })

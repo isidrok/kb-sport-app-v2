@@ -42,16 +42,36 @@ describe('useWorkoutActions', () => {
     expect(workoutService.startWorkout).toHaveBeenCalledWith(mockVideoElement, mockCanvasElement)
   })
 
-  it('stop workout calls service', () => {
+  it('stop workout calls service', async () => {
+    vi.mocked(workoutService.stopWorkout).mockResolvedValue()
     mockSubscribe.mockReturnValue(mockUnsubscribe)
     
     const { result } = renderHook(() => useWorkoutActions())
 
-    act(() => {
-      result.current.stopWorkout()
+    await act(async () => {
+      await result.current.stopWorkout()
     })
 
     expect(workoutService.stopWorkout).toHaveBeenCalledOnce()
+  })
+
+  it('handles stop workout errors gracefully', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const error = new Error('Failed to save workout')
+    vi.mocked(workoutService.stopWorkout).mockRejectedValue(error)
+    mockSubscribe.mockReturnValue(mockUnsubscribe)
+    
+    const { result } = renderHook(() => useWorkoutActions())
+
+    // Should not throw even if service fails
+    await act(async () => {
+      await result.current.stopWorkout()
+    })
+
+    expect(workoutService.stopWorkout).toHaveBeenCalledOnce()
+    expect(consoleSpy).toHaveBeenCalledWith('Error stopping workout:', error)
+    
+    consoleSpy.mockRestore()
   })
 
   it('tracks camera errors', () => {

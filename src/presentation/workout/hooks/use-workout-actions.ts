@@ -29,8 +29,12 @@ export function useWorkoutActions() {
     }
   }
 
-  const stopWorkout = (canvasElement?: HTMLCanvasElement) => {
-    workoutService.stopWorkout(canvasElement)
+  const stopWorkout = async (canvasElement?: HTMLCanvasElement) => {
+    try {
+      await workoutService.stopWorkout(canvasElement)
+    } catch (error) {
+      console.error('Error stopping workout:', error)
+    }
   }
 
   return {

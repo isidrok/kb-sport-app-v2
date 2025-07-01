@@ -8,7 +8,7 @@ export class StartCameraUseCase {
     private eventBus: EventBus
   ) {}
 
-  async execute(videoElement: HTMLVideoElement): Promise<void> {
+  async execute(videoElement: HTMLVideoElement): Promise<MediaStream> {
     // Publish requesting event
     this.eventBus.publish(new CameraAccessEvent({ status: 'requesting' }))
     
@@ -16,8 +16,16 @@ export class StartCameraUseCase {
       // Start camera
       await this.cameraAdapter.start(videoElement)
       
+      // Get the stream to return
+      const stream = this.cameraAdapter.getStream()
+      if (!stream) {
+        throw new Error('Failed to get camera stream')
+      }
+      
       // Publish ready event
       this.eventBus.publish(new CameraAccessEvent({ status: 'ready' }))
+      
+      return stream
     } catch (error) {
       // Publish error event
       const message = error instanceof Error ? error.message : 'Unknown error'

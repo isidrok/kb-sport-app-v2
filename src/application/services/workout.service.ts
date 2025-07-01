@@ -5,6 +5,7 @@ import { detectRepUseCase, type DetectRepUseCase } from '@/application/use-cases
 import { workoutTimerUseCase, type WorkoutTimerUseCase } from '@/application/use-cases/workout-timer-use-case'
 import { poseService, type PoseService } from './pose.service'
 import { previewService, type PreviewService } from './preview.service'
+import { workoutStorageService, type WorkoutStorageService } from './workout-storage.service'
 
 interface WorkoutServiceDependencies {
   startWorkoutUseCase: StartWorkoutUseCase
@@ -13,6 +14,7 @@ interface WorkoutServiceDependencies {
   workoutTimerUseCase: WorkoutTimerUseCase
   poseService: PoseService
   previewService: PreviewService
+  workoutStorageService: WorkoutStorageService
 }
 
 /**
@@ -35,6 +37,7 @@ export class WorkoutService {
   private workoutTimerUseCase: WorkoutTimerUseCase
   private poseService: PoseService
   private previewService: PreviewService
+  private workoutStorageService: WorkoutStorageService
 
   constructor(dependencies: WorkoutServiceDependencies) {
     this.startWorkoutUseCase = dependencies.startWorkoutUseCase
@@ -43,6 +46,7 @@ export class WorkoutService {
     this.workoutTimerUseCase = dependencies.workoutTimerUseCase
     this.poseService = dependencies.poseService
     this.previewService = dependencies.previewService
+    this.workoutStorageService = dependencies.workoutStorageService
   }
 
   createWorkout(): WorkoutEntity {
@@ -66,14 +70,34 @@ export class WorkoutService {
     await this.poseService.startPoseDetection(videoElement, canvasElement)
     this.startWorkoutUseCase.execute(this._currentWorkout!)
     this.workoutTimerUseCase.start(this._currentWorkout!)
+
+    // Start video recording
+    const mediaStream = this.poseService.getMediaStream()
+    if (mediaStream && this._currentWorkout) {
+      try {
+        await this.workoutStorageService.startVideoRecording(this._currentWorkout, mediaStream)
+      } catch (error) {
+        console.warn('Failed to start video recording:', error)
+        // Continue with workout even if recording fails
+      }
+    }
   }
 
-  stopWorkout(canvasElement?: HTMLCanvasElement): void {
+  async stopWorkout(canvasElement?: HTMLCanvasElement): Promise<void> {
     if (!this._currentWorkout) return
     
     this.poseService.stopPoseDetection(canvasElement)
     this.stopWorkoutUseCase.execute(this._currentWorkout, canvasElement)
     this.workoutTimerUseCase.stop()
+
+    // Save workout data
+    try {
+      await this.workoutStorageService.stopRecording(this._currentWorkout)
+      console.log('Workout saved successfully:', this._currentWorkout.id)
+    } catch (error) {
+      console.error('Failed to save workout:', error)
+      // Even if saving fails, the workout was still completed
+    }
   }
 
   processFrame(videoElement: HTMLVideoElement, canvasElement: HTMLCanvasElement): void {
@@ -109,5 +133,6 @@ export const workoutService = new WorkoutService({
   detectRepUseCase,
   workoutTimerUseCase,
   poseService,
-  previewService
+  previewService,
+  workoutStorageService
 })

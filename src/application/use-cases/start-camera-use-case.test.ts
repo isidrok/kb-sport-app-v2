@@ -22,6 +22,7 @@ describe('StartCameraUseCase', () => {
 
   it('publishes requesting camera event on start', async () => {
     mockCameraAdapter.start.mockResolvedValue(undefined)
+    mockCameraAdapter.getStream.mockReturnValue({} as MediaStream)
 
     await useCase.execute(mockVideoElement)
 
@@ -36,6 +37,7 @@ describe('StartCameraUseCase', () => {
 
   it('starts camera and publishes ready event', async () => {
     mockCameraAdapter.start.mockResolvedValue(undefined)
+    mockCameraAdapter.getStream.mockReturnValue({} as MediaStream)
 
     await useCase.execute(mockVideoElement)
 
