@@ -48,6 +48,8 @@ describe('WorkoutCard', () => {
       expect(screen.getByText('Reps')).toBeInTheDocument()
       expect(screen.getByText('2.9')).toBeInTheDocument()
       expect(screen.getByText('RPM')).toBeInTheDocument()
+      expect(screen.getByText('15:30')).toBeInTheDocument()
+      expect(screen.getByText('Duration')).toBeInTheDocument()
       expect(screen.getByText('15.7 MB')).toBeInTheDocument()
     })
 
@@ -66,6 +68,55 @@ describe('WorkoutCard', () => {
 
       // Assert
       expect(screen.getByText('July 1, 2024 at 12:30 PM')).toBeInTheDocument()
+    })
+
+    it('formats duration as mm:ss', () => {
+      // Arrange - workout with different duration
+      const workoutWith90Seconds = {
+        ...mockWorkout,
+        startTime: new Date('2024-07-01T10:30:00.000Z'),
+        endTime: new Date('2024-07-01T10:31:30.000Z'), // 1 minute 30 seconds
+      }
+
+      // Act
+      render(
+        <WorkoutCard 
+          workout={workoutWith90Seconds}
+          onView={mockOnView}
+          onDownload={mockOnDownload}
+          onDelete={mockOnDelete}
+          onConfirmDelete={mockOnConfirmDelete}
+          onCancelDelete={mockOnCancelDelete}
+        />
+      )
+
+      // Assert
+      expect(screen.getByText('01:30')).toBeInTheDocument()
+      expect(screen.getByText('Duration')).toBeInTheDocument()
+    })
+
+    it('pads single digit minutes and seconds', () => {
+      // Arrange - workout with 5 minutes 7 seconds (307 seconds)
+      const shortWorkout = {
+        ...mockWorkout,
+        startTime: new Date('2024-07-01T10:30:00.000Z'),
+        endTime: new Date('2024-07-01T10:35:07.000Z'), // 5 minutes 7 seconds
+      }
+
+      // Act
+      render(
+        <WorkoutCard 
+          workout={shortWorkout}
+          onView={mockOnView}
+          onDownload={mockOnDownload}
+          onDelete={mockOnDelete}
+          onConfirmDelete={mockOnConfirmDelete}
+          onCancelDelete={mockOnCancelDelete}
+        />
+      )
+
+      // Assert
+      expect(screen.getByText('05:07')).toBeInTheDocument()
     })
 
     it('shows three action buttons', () => {

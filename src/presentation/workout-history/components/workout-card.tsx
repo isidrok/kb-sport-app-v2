@@ -22,15 +22,22 @@ export function WorkoutCard({
   onConfirmDelete,
   onCancelDelete,
 }: WorkoutCardProps) {
-  // Calculate workout duration
-  const duration = workout.endTime
+  // Calculate workout duration in seconds and format as mm:ss
+  const durationInSeconds = workout.endTime
     ? Math.round(
         (new Date(workout.endTime).getTime() -
           new Date(workout.startTime).getTime()) /
-          1000 /
-          60
+          1000
       )
     : 0;
+
+  const formatDuration = (seconds: number): string => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
+  const duration = formatDuration(durationInSeconds);
 
   if (isDeleting) {
     return (
@@ -86,7 +93,7 @@ export function WorkoutCard({
         </div>
         <div className={styles.stat}>
           <div className={styles.statValue}>{duration}</div>
-          <div className={styles.statLabel}>Min</div>
+          <div className={styles.statLabel}>Duration</div>
         </div>
       </div>
 
