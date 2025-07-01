@@ -2,16 +2,12 @@ import { Icon } from '@/presentation/components/icon'
 
 interface WorkoutHistoryButtonProps {
   onClick: () => void
-  workoutCount?: number
 }
 
-export function WorkoutHistoryButton({ onClick, workoutCount }: WorkoutHistoryButtonProps) {
+export function WorkoutHistoryButton({ onClick }: WorkoutHistoryButtonProps) {
   return (
-    <button onClick={onClick}>
+    <button onClick={onClick} data-testid="history-button">
       <Icon name="history" />
-      {workoutCount && workoutCount > 0 && (
-        <span>{workoutCount}</span>
-      )}
     </button>
   )
 }

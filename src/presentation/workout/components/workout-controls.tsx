@@ -1,9 +1,13 @@
 import { RefObject } from 'preact'
+import { useState } from 'preact/hooks'
 import { useWorkoutState } from '../hooks/use-workout-state'
 import { useWorkoutActions } from '../hooks/use-workout-actions'
 import { usePreview } from '../../hooks/use-preview'
+import { useWorkoutHistory } from '../../hooks/use-workout-history'
 import { WorkoutButton } from './workout-button'
 import { PreviewButton } from './preview-button'
+import { WorkoutHistoryButton } from '../../workout-history/components/workout-history-button'
+import { WorkoutHistoryDrawer } from '../../workout-history/components/workout-history-drawer'
 import styles from './workout-controls.module.css'
 
 interface WorkoutControlsProps {
@@ -15,6 +19,8 @@ export function WorkoutControls({ videoRef, canvasRef }: WorkoutControlsProps) {
   const stats = useWorkoutState()
   const { startWorkout, stopWorkout, isStarting } = useWorkoutActions()
   const { isPreviewActive, startPreview, stopPreview } = usePreview(videoRef, canvasRef)
+  const { workouts, isLoading } = useWorkoutHistory()
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false)
   
   const canStart = !stats.isActive
   const canStop = stats.isActive
@@ -31,21 +37,40 @@ export function WorkoutControls({ videoRef, canvasRef }: WorkoutControlsProps) {
     }
   }
 
+  const handleOpenHistory = () => {
+    setIsHistoryOpen(true)
+  }
+
+  const handleCloseHistory = () => {
+    setIsHistoryOpen(false)
+  }
+
   return (
-    <div className={styles.container}>
-      <PreviewButton
-        isPreviewActive={isPreviewActive}
-        isDisabled={canStop}
-        onStartPreview={startPreview}
-        onStopPreview={stopPreview}
+    <>
+      <div className={styles.container}>
+        <WorkoutHistoryButton 
+          onClick={handleOpenHistory}
+        />
+        <PreviewButton
+          isPreviewActive={isPreviewActive}
+          isDisabled={canStop}
+          onStartPreview={startPreview}
+          onStopPreview={stopPreview}
+        />
+        <WorkoutButton
+          canStart={canStart}
+          canStop={canStop}
+          isStarting={isStarting}
+          onStartWorkout={handleStartWorkout}
+          onStopWorkout={handleStopWorkout}
+        />
+      </div>
+      <WorkoutHistoryDrawer
+        isOpen={isHistoryOpen}
+        onClose={handleCloseHistory}
+        workouts={workouts}
+        isLoading={isLoading}
       />
-      <WorkoutButton
-        canStart={canStart}
-        canStop={canStop}
-        isStarting={isStarting}
-        onStartWorkout={handleStartWorkout}
-        onStopWorkout={handleStopWorkout}
-      />
-    </div>
+    </>
   )
 }

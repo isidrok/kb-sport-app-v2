@@ -30,12 +30,5 @@ describe('WorkoutHistoryButton', () => {
       expect(mockOnClick).toHaveBeenCalled()
     })
 
-    it('shows workout count badge', () => {
-      // Arrange & Act
-      render(<WorkoutHistoryButton onClick={mockOnClick} workoutCount={5} />)
-
-      // Assert
-      expect(screen.getByText('5')).toBeInTheDocument()
-    })
   })
 })
