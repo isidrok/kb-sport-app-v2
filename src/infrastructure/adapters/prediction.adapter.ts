@@ -9,6 +9,7 @@ import {
   squeeze,
   concat,
   tidy,
+  zeros,
   type Tensor3D,
   GraphModel,
 } from "@tensorflow/tfjs";
@@ -33,6 +34,9 @@ export class PredictionAdapter {
     const modelURL =
       import.meta.env.BASE_URL + "models/yolov8n-pose_web_model/model.json";
     this.model = await loadGraphModel(modelURL);
+    
+    // Warm up the model with a dummy inference
+    await this.warmUp();
   }
 
   process(video: HTMLVideoElement): PredictionResult | null {
@@ -81,6 +85,35 @@ export class PredictionAdapter {
     if (this.model) {
       this.model.dispose();
       this.model = null;
+    }
+  }
+
+  /**
+   * Warm up the model by running a dummy inference.
+   * This pre-compiles GPU shaders and allocates memory, making the first real inference faster.
+   */
+  private async warmUp(): Promise<void> {
+    if (!this.model) {
+      throw new Error("Model not initialized");
+    }
+
+    // Create a dummy tensor with the expected input shape
+    const modelInputShape = this.model.inputs[0].shape!;
+    const [, height, width, channels] = modelInputShape; // Skip batch size
+    
+    // Create zeros tensor with model input shape (without batch dimension)
+    const dummyInput = zeros([height, width, channels]) as Tensor3D;
+    // Add batch dimension
+    const batchedInput = dummyInput.expandDims(0) as Tensor3D;
+    
+    try {
+      // Run inference and immediately dispose the result
+      const result = this.model.predict(batchedInput) as Tensor3D;
+      result.dispose();
+    } finally {
+      // Always dispose the input tensors
+      batchedInput.dispose();
+      dummyInput.dispose();
     }
   }
 
